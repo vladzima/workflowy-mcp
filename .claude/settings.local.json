@@ -7,7 +7,12 @@
       "Bash(scripts/check-task-prerequisites.sh:*)",
       "Bash(git add:*)",
       "Bash(tree:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(source:*)",
+      "Bash(conda install:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m pytest tests/contract/test_create_node.py::TestCreateNodeContract::test_create_node_input_schema -xvs)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []
