@@ -1,0 +1,190 @@
+{
+  "name": "workflowy-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for WorkFlowy API integration",
+  "tools": [
+    {
+      "name": "workflowy_create_node",
+      "description": "Create a new node in WorkFlowy",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Text content of the node"
+          },
+          "note": {
+            "type": "string",
+            "description": "Optional note attached to the node"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "ID of the parent node (optional for root-level)"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Priority level (0=none, 1=low, 2=medium, 3=high)"
+          }
+        },
+        "required": ["name"]
+      }
+    },
+    {
+      "name": "workflowy_update_node",
+      "description": "Update an existing WorkFlowy node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the node to update"
+          },
+          "name": {
+            "type": "string",
+            "description": "New text content"
+          },
+          "note": {
+            "type": "string",
+            "description": "New note content"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "New priority level"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "New parent ID (to move the node)"
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "workflowy_get_node",
+      "description": "Retrieve a specific node by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the node to retrieve"
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "workflowy_list_nodes",
+      "description": "List nodes with optional filtering",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "parentId": {
+            "type": "string",
+            "description": "Filter by parent node ID"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Filter by completion status"
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query for node content"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 100,
+            "description": "Maximum number of results"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Pagination offset"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "workflowy_delete_node",
+      "description": "Delete a node and all its children",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the node to delete"
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "workflowy_complete_node",
+      "description": "Mark a node as completed",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the node to complete"
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "workflowy_uncomplete_node",
+      "description": "Mark a node as not completed",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the node to uncomplete"
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "workflowy_search_nodes",
+      "description": "Search for nodes by text content",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query string"
+          },
+          "includeCompleted": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include completed nodes in results"
+          }
+        },
+        "required": ["query"],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "workflowy_outline",
+      "description": "Read-only view of the user's WorkFlowy outline structure",
+      "mimeType": "application/json"
+    }
+  ]
+}

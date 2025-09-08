@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:beta.workflowy.com)"
+      "WebFetch(domain:beta.workflowy.com)",
+      "Bash(chmod:*)",
+      "Bash(scripts/check-task-prerequisites.sh:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
