@@ -5,7 +5,9 @@
       "WebFetch(domain:beta.workflowy.com)",
       "Bash(chmod:*)",
       "Bash(scripts/check-task-prerequisites.sh:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(tree:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,5 @@
 
+# IDE Configuration
 .clinerules/byterover-rules.md
 .kilocode/rules/byterover-rules.md
 .roo/rules/byterover-rules.md
@@ -7,3 +8,112 @@
 .kiro/steering/byterover-rules.md
 .qoder/rules/byterover-rules.md
 .augment/rules/byterover-rules.md
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+.env/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Package manager locks (optional, uncomment if needed)
+# poetry.lock
+# Pipfile.lock
+
+# Documentation builds
+docs/_build/
+docs/.doctrees/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spec-Driven Development
+specs/*/task-agent*.md
+specs/*/parallel-*.md
+specs/*/implementation/
