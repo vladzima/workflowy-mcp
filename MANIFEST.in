@@ -1,0 +1,31 @@
+# Include important files in distribution
+include README.md
+include LICENSE
+include CONTRIBUTING.md
+include pyproject.toml
+include .env.example
+include install.sh
+include install.ps1
+
+# Include all package data
+recursive-include src/workflowy_mcp *.py *.json *.yaml *.yml *.txt
+
+# Include tests in source distribution
+recursive-include tests *.py *.json *.yaml *.yml *.txt
+
+# Include documentation
+recursive-include docs *.md *.rst *.txt
+
+# Exclude unnecessary files
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude .git*
+global-exclude .env
+global-exclude *.log
+global-exclude *.swp
+global-exclude *~
+exclude .coverage
+exclude .pytest_cache
+exclude htmlcov
+recursive-exclude tests/fixtures *.db

@@ -14,7 +14,7 @@ uv pip install workflowy-mcp
 
 ### Option 3: Install from Source
 ```bash
-git clone https://github.com/yourusername/workflowy-mcp.git
+git clone https://github.com/vladzima/workflowy-mcp.git
 cd workflowy-mcp
 pip install -e .
 ```
@@ -216,6 +216,6 @@ Delete the WorkFlowy node with ID def456
 
 ## Support
 
-- GitHub Issues: https://github.com/yourusername/workflowy-mcp/issues
-- Documentation: https://github.com/yourusername/workflowy-mcp/wiki
+- GitHub Issues: https://github.com/vladzima/workflowy-mcp/issues
+- Documentation: https://github.com/vladzima/workflowy-mcp/wiki
 - WorkFlowy API Docs: https://beta.workflowy.com/api-reference/

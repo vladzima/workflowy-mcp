@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "Vlad Arbatov", email = "vlad@arbatov.dev"},
 ]
 keywords = ["mcp", "workflowy", "api", "automation"]
 classifiers = [
@@ -26,7 +26,6 @@ dependencies = [
     "fastmcp>=0.1.0",
     "httpx>=0.25.0",
     "pydantic>=2.0.0",
-    "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -37,12 +36,12 @@ dev = [
     "black>=23.0.0",
     "mypy>=1.5.0",
     "ruff>=0.1.0",
+    "python-dotenv>=1.0.0",  # For development with .env files
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/workflowy-mcp"
-Issues = "https://github.com/yourusername/workflowy-mcp/issues"
-Documentation = "https://github.com/yourusername/workflowy-mcp/wiki"
+Homepage = "https://github.com/vladzima/workflowy-mcp"
+Issues = "https://github.com/vladzima/workflowy-mcp/issues"
 
 [project.scripts]
 workflowy-mcp = "workflowy_mcp.__main__:main"

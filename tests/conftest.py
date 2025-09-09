@@ -1,5 +1,8 @@
 """Shared test fixtures and configuration for WorkFlowy MCP tests."""
 
+import sys
+import os
+from pathlib import Path
 import asyncio
 from typing import Any, AsyncGenerator, Dict
 from unittest.mock import AsyncMock, MagicMock
@@ -7,6 +10,15 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 import pytest_asyncio
 from fastmcp import FastMCP
+
+# Add src to path for imports
+src_path = Path(__file__).parent.parent / "src"
+sys.path.insert(0, str(src_path))
+
+# Set up test environment
+os.environ.setdefault("WORKFLOWY_API_KEY", "test-api-key")
+os.environ.setdefault("WORKFLOWY_API_URL", "https://api.test.workflowy.com")
+os.environ.setdefault("LOG_LEVEL", "ERROR")
 
 
 @pytest.fixture(scope="session")

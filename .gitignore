@@ -9,6 +9,12 @@
 .qoder/rules/byterover-rules.md
 .augment/rules/byterover-rules.md
 .claude/
+memory/
+scripts/
+tasks/
+templates/
+AGENTS.md
+CLAUDE.md
 
 # Python
 __pycache__/
