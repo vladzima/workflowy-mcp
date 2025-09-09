@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 class WorkFlowyNode(BaseModel):
     """Represents a single node in the WorkFlowy outline hierarchy."""
-    
+
     id: str = Field(..., description="Unique identifier for the node")
     nm: Optional[str] = Field(None, description="Name/text content of the node")
     no: Optional[str] = Field(None, description="Note content attached to the node")
@@ -16,7 +16,7 @@ class WorkFlowyNode(BaseModel):
     modified: int = Field(..., description="Last modification timestamp")
     priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (0-3)")
     layout_mode: Optional[str] = Field(None, description="Display layout mode")
-    
+
     @field_validator("id")
     @classmethod
     def validate_id(cls, v: str) -> str:
@@ -24,7 +24,7 @@ class WorkFlowyNode(BaseModel):
         if not v or not v.strip():
             raise ValueError("Node ID must be non-empty")
         return v
-    
+
     @field_validator("created", "modified")
     @classmethod
     def validate_timestamp(cls, v: int) -> int:
@@ -32,7 +32,7 @@ class WorkFlowyNode(BaseModel):
         if v <= 0:
             raise ValueError("Timestamp must be positive")
         return v
-    
+
     @field_validator("priority")
     @classmethod
     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
@@ -40,9 +40,10 @@ class WorkFlowyNode(BaseModel):
         if v is not None and (v < 0 or v > 3):
             raise ValueError("Priority must be between 0 and 3")
         return v
-    
+
     class Config:
         """Pydantic model configuration."""
+
         json_schema_extra = {
             "example": {
                 "id": "node-123",
@@ -52,7 +53,7 @@ class WorkFlowyNode(BaseModel):
                 "created": 1704067200,
                 "modified": 1704067200,
                 "priority": 1,
-                "ch": []
+                "ch": [],
             }
         }
 

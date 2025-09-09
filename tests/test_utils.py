@@ -12,6 +12,7 @@ sys.path.insert(0, str(src_path))
 if "WORKFLOWY_API_KEY" not in os.environ:
     os.environ["WORKFLOWY_API_KEY"] = "test-api-key"
 
+
 def setup_test_env():
     """Set up test environment."""
     os.environ.setdefault("WORKFLOWY_API_KEY", "test-api-key")

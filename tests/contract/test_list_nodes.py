@@ -15,17 +15,17 @@ class TestListNodesContract:
     async def test_list_nodes_input_schema(self, mock_mcp_server: FastMCP) -> None:
         """Test that list_nodes accepts the correct input schema."""
         from workflowy_mcp.server import mcp
-        
+
         # Get tools from the actual server
         tools = await mcp.get_tools()
-        
+
         # Find the tool
         assert "workflowy_list_nodes" in tools
         tool = tools["workflowy_list_nodes"]
-        
+
         assert tool.name == "workflowy_list_nodes"
         assert tool.description is not None
-        
+
         # Check parameters
         params = tool.parameters
         assert params["type"] == "object"
@@ -39,7 +39,7 @@ class TestListNodesContract:
     async def test_list_nodes_basic(self) -> None:
         """Test basic list_nodes operation."""
         from tests.tool_adapters import test_list_nodes
-        
+
         # This will use mocked client
         result = await test_list_nodes({"id": "test-id"})
         assert result is not None
