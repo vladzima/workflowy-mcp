@@ -11,7 +11,7 @@ class TestCreateNodeContract:
     """Contract tests for node creation tool."""
 
     @pytest.mark.asyncio
-    async def test_create_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
+    async def test_create_node_input_schema(self, mock_mcp_server: FastMCP) -> None:  # noqa: ARG002
         """Test that create_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 
@@ -31,12 +31,12 @@ class TestCreateNodeContract:
         assert "name" in params["properties"]
         assert "parent_id" in params["properties"]
         assert "note" in params["properties"]
-        assert "completed" in params["properties"]
+        assert "_completed" in params["properties"]
         assert params["required"] == ["name"]
 
     @pytest.mark.asyncio
     async def test_create_node_with_minimal_input(
-        self, _sample_create_request: dict[str, Any]
+        self, sample_create_request: dict[str, Any]  # noqa: ARG002
     ) -> None:
         """Test creating a node with only required fields."""
         from ..tool_adapters import test_create_node

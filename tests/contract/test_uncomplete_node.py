@@ -8,7 +8,9 @@ class TestUncompleteNodeContract:
     """Contract tests for node uncompletion tool."""
 
     @pytest.mark.asyncio
-    async def test_uncomplete_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
+    async def test_uncomplete_node_input_schema(
+        self, mock_mcp_server: FastMCP  # noqa: ARG002
+    ) -> None:
         """Test that uncomplete_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 

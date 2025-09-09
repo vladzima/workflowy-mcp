@@ -8,7 +8,7 @@ class TestUpdateNodeContract:
     """Contract tests for node update tool."""
 
     @pytest.mark.asyncio
-    async def test_update_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
+    async def test_update_node_input_schema(self, mock_mcp_server: FastMCP) -> None:  # noqa: ARG002
         """Test that update_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 
@@ -28,7 +28,7 @@ class TestUpdateNodeContract:
         assert "node_id" in params["properties"]
         assert "name" in params["properties"]
         assert "note" in params["properties"]
-        assert "completed" in params["properties"]
+        assert "_completed" in params["properties"]
         assert params["required"] == ["node_id"]
 
     @pytest.mark.asyncio

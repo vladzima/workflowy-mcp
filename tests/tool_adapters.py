@@ -70,7 +70,7 @@ async def test_create_node(data: dict[str, Any]) -> dict[str, Any]:
             name=data["name"],
             parent_id=data.get("parentId"),
             note=data.get("note"),
-            completed=data.get("completed", False),
+            _completed=data.get("completed", False),
         )
 
         return {"success": True, "node": result.model_dump()}
@@ -99,7 +99,7 @@ async def test_update_node(data: dict[str, Any]) -> dict[str, Any]:
             node_id=data["id"],
             name=data.get("name"),
             note=data.get("note"),
-            completed=data.get("completed"),
+            _completed=data.get("completed"),
         )
 
         return {"success": True, "node": result.model_dump()}
@@ -151,8 +151,8 @@ async def test_list_nodes(data: dict[str, Any]) -> dict[str, Any]:
         # Call the actual function
         result = await list_nodes(
             parent_id=data.get("parentId"),
-            include_completed=data.get("includeCompleted", True),
-            max_depth=data.get("maxDepth"),
+            _include_completed=data.get("includeCompleted", True),
+            _max_depth=data.get("maxDepth"),
             limit=data.get("limit", 100),
             offset=data.get("offset", 0),
         )

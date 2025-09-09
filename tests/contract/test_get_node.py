@@ -8,7 +8,7 @@ class TestGetNodeContract:
     """Contract tests for node retrieval tool."""
 
     @pytest.mark.asyncio
-    async def test_get_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
+    async def test_get_node_input_schema(self, mock_mcp_server: FastMCP) -> None:  # noqa: ARG002
         """Test that get_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 

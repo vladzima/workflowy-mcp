@@ -8,7 +8,9 @@ class TestCompleteNodeContract:
     """Contract tests for node completion tool."""
 
     @pytest.mark.asyncio
-    async def test_complete_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
+    async def test_complete_node_input_schema(
+        self, mock_mcp_server: FastMCP  # noqa: ARG002
+    ) -> None:
         """Test that complete_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 
