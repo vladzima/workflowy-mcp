@@ -26,6 +26,12 @@ class ErrorResponse(BaseModel):
         }
 
 
+class APIError(Exception):
+    """Base API error class (alias for compatibility)."""
+
+    pass
+
+
 class WorkFlowyError(Exception):
     """Base exception for WorkFlowy MCP errors."""
 
@@ -40,7 +46,7 @@ class WorkFlowyError(Exception):
 
     def to_response(self) -> ErrorResponse:
         """Convert exception to error response."""
-        return ErrorResponse(error=self.message, code=self.code, details=self.details)
+        return ErrorResponse(error=self.message, code=self.code, details=self.details, success=False)
 
 
 class AuthenticationError(WorkFlowyError):

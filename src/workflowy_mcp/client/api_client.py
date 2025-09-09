@@ -51,11 +51,11 @@ class WorkFlowyClient:
             await self._client.aclose()
             self._client = None
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "WorkFlowyClient":
         """Async context manager entry."""
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Async context manager exit."""
         await self.close()
 
@@ -85,7 +85,7 @@ class WorkFlowyClient:
             raise NetworkError(message)
 
         try:
-            return response.json()
+            return response.json()  # type: ignore[no-any-return]
         except json.JSONDecodeError as err:
             raise NetworkError("Invalid response format from API") from err
 
@@ -175,7 +175,7 @@ class WorkFlowyClient:
     async def search_nodes(self, query: str, include_completed: bool = True) -> list[WorkFlowyNode]:
         """Search for nodes by text content."""
         try:
-            params = {"q": query, "include_completed": include_completed}
+            params: dict[str, str | bool] = {"q": query, "include_completed": include_completed}
             response = await self.client.get("/nodes/search", params=params)
             data = await self._handle_response(response)
 

@@ -47,7 +47,7 @@ def setup_logging(config: ServerConfig | None = None) -> None:
     }
 
     if isinstance(log_level, str):
-        log_level = level_map.get(log_level.upper(), logging.INFO)
+        log_level = level_map.get(log_level.upper(), logging.INFO)  # type: ignore[assignment]
 
     # Configure root logger
     root_logger = logging.getLogger()

@@ -20,9 +20,9 @@ def error_handler(func: Callable) -> Callable:
     """Decorator to handle errors in MCP tool functions."""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs) -> dict[str, Any]:
+    async def wrapper(*args: Any, **kwargs: Any) -> dict[str, Any]:
         try:
-            return await func(*args, **kwargs)
+            return await func(*args, **kwargs)  # type: ignore[no-any-return]
         except ValidationError as e:
             return {
                 "success": False,
@@ -88,7 +88,7 @@ def error_handler(func: Callable) -> Callable:
 class ErrorMiddleware:
     """Middleware class for handling errors across the MCP server."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize error middleware."""
         self.error_count = 0
         self.error_types: dict[str, int] = {}

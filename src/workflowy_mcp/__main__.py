@@ -5,7 +5,7 @@ import asyncio
 from workflowy_mcp.server import mcp
 
 
-def main():
+def main() -> None:
     """Run the MCP server."""
     asyncio.run(mcp.run())
 

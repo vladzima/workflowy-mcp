@@ -30,7 +30,7 @@ def get_client() -> WorkFlowyClient:
 
 
 @asynccontextmanager
-async def lifespan(_app: FastMCP):
+async def lifespan(_app: FastMCP):  # type: ignore[no-untyped-def]
     """Manage server lifecycle."""
     global _client, _rate_limiter
 
@@ -95,9 +95,8 @@ async def create_node(
 
     request = NodeCreateRequest(
         nm=name,
-        parent_id=parent_id,
+        parentId=parent_id,
         no=note,
-        cp=completed,
     )
 
     if _rate_limiter:
@@ -138,7 +137,6 @@ async def update_node(
     request = NodeUpdateRequest(
         nm=name,
         no=note,
-        cp=completed,
     )
 
     if _rate_limiter:
@@ -206,9 +204,7 @@ async def list_nodes(
     client = get_client()
 
     request = NodeListRequest(
-        parent_id=parent_id,
-        include_completed=include_completed,
-        max_depth=max_depth,
+        parentId=parent_id,
         limit=limit,
         offset=offset,
     )
@@ -362,8 +358,6 @@ async def get_outline() -> str:
     try:
         # Get root nodes
         request = NodeListRequest(
-            include_completed=True,
-            max_depth=10,  # Get deep hierarchy
             limit=1000,  # Get many nodes
         )
         nodes, _ = await client.list_nodes(request)

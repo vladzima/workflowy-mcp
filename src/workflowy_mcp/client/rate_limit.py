@@ -4,6 +4,7 @@ import asyncio
 import logging
 import time
 from collections import deque
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class RateLimiter:
         self.lock = asyncio.Lock()
 
         # Request history for sliding window
-        self.request_times = deque(maxlen=100)
+        self.request_times: deque[float] = deque(maxlen=100)
 
         # Track retry-after if we hit rate limits
         self.retry_after_until: float | None = None
@@ -107,7 +108,7 @@ class RateLimiter:
 
         time_span = now - recent_requests[0]
         if time_span > 0:
-            return len(recent_requests) / time_span
+            return float(len(recent_requests) / time_span)
         return 0.0
 
     def reset(self) -> None:
@@ -122,7 +123,7 @@ class AdaptiveRateLimiter(RateLimiter):
     """Adaptive rate limiter that adjusts based on server responses."""
 
     def __init__(
-        self, initial_rate: float = 10.0, min_rate: float = 1.0, max_rate: float = 100.0, **kwargs
+        self, initial_rate: float = 10.0, min_rate: float = 1.0, max_rate: float = 100.0, **kwargs: Any
     ):
         """Initialize adaptive rate limiter."""
         super().__init__(requests_per_second=initial_rate, **kwargs)

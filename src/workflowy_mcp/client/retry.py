@@ -43,7 +43,7 @@ class RetryHandler:
 
         return delay
 
-    async def execute_with_retry(self, func: Callable[..., Any], *args, **kwargs) -> Any:
+    async def execute_with_retry(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
         """Execute a function with retry logic."""
         last_exception = None
 
@@ -66,7 +66,7 @@ class RetryHandler:
                     raise
 
             except (NetworkError, TimeoutError) as e:
-                last_exception = e
+                last_exception = e  # type: ignore[assignment]
                 if attempt < self.max_retries:
                     delay = self.calculate_delay(attempt)
                     logger.warning(
@@ -89,12 +89,12 @@ class RetryHandler:
         raise RuntimeError("Unexpected retry logic error")
 
 
-def with_retry(max_retries: int = 3, base_delay: float = 1.0, max_delay: float = 60.0):
+def with_retry(max_retries: int = 3, base_delay: float = 1.0, max_delay: float = 60.0) -> Callable[..., Any]:
     """Decorator to add retry logic to async functions."""
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
             handler = RetryHandler(
                 max_retries=max_retries, base_delay=base_delay, max_delay=max_delay
             )

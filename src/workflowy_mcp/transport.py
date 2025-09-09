@@ -29,10 +29,10 @@ class STDIOTransport:
     Handles reading from stdin and writing to stdout in JSON-RPC format.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize STDIO transport."""
-        self.reader = None
-        self.writer = None
+        self.reader: asyncio.StreamReader | None = None
+        self.writer: asyncio.StreamWriter | None = None
         self.running = False
         self.message_id = 0
 
@@ -128,7 +128,7 @@ class STDIOTransport:
 
         try:
             # Convert message to dict
-            data = {
+            data: dict[str, Any] = {
                 "jsonrpc": message.jsonrpc,
             }
 
@@ -196,7 +196,7 @@ class STDIOTransport:
 class TransportManager:
     """Manages the transport layer for the MCP server."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize transport manager."""
         self.transport = STDIOTransport()
         self.handlers: dict[str, Any] = {}

@@ -20,7 +20,7 @@ def log_request_response(func: Callable) -> Callable:
     """Decorator to log MCP tool requests and responses."""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs) -> dict[str, Any]:
+    async def wrapper(*args: Any, **kwargs: Any) -> dict[str, Any]:
         start_time = time.time()
         request_id = f"{func.__name__}_{int(start_time * 1000)}"
 
@@ -54,7 +54,7 @@ def log_request_response(func: Callable) -> Callable:
                 },
             )
 
-            return result
+            return result  # type: ignore[no-any-return]
 
         except Exception as e:
             # Calculate execution time
