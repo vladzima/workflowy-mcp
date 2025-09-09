@@ -7,7 +7,7 @@ from workflowy_mcp.server import mcp
 
 def main() -> None:
     """Run the MCP server."""
-    asyncio.run(mcp.run())
+    asyncio.run(mcp.run())  # type: ignore[func-returns-value]
 
 
 if __name__ == "__main__":

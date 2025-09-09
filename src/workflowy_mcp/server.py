@@ -38,7 +38,7 @@ async def lifespan(_app: FastMCP):  # type: ignore[no-untyped-def]
     logger.info("Starting WorkFlowy MCP server")
 
     # Load configuration
-    config = ServerConfig()
+    config = ServerConfig()  # type: ignore[call-arg]
     api_config = config.get_api_config()
 
     # Initialize rate limiter (default 10 req/s)
@@ -93,7 +93,7 @@ async def create_node(
     """
     client = get_client()
 
-    request = NodeCreateRequest(
+    request = NodeCreateRequest(  # type: ignore[call-arg]
         nm=name,
         parentId=parent_id,
         no=note,
@@ -134,7 +134,7 @@ async def update_node(
     """
     client = get_client()
 
-    request = NodeUpdateRequest(
+    request = NodeUpdateRequest(  # type: ignore[call-arg]
         nm=name,
         no=note,
     )
@@ -203,7 +203,7 @@ async def list_nodes(
     """
     client = get_client()
 
-    request = NodeListRequest(
+    request = NodeListRequest(  # type: ignore[call-arg]
         parentId=parent_id,
         limit=limit,
         offset=offset,
@@ -357,7 +357,7 @@ async def get_outline() -> str:
 
     try:
         # Get root nodes
-        request = NodeListRequest(
+        request = NodeListRequest(  # type: ignore[call-arg]
             limit=1000,  # Get many nodes
         )
         nodes, _ = await client.list_nodes(request)

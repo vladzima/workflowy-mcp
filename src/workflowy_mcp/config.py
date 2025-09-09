@@ -28,7 +28,7 @@ def setup_logging(config: ServerConfig | None = None) -> None:
     """
     if config is None:
         try:
-            config = ServerConfig()
+            config = ServerConfig()  # type: ignore[call-arg]
         except Exception:
             # If config loading fails, use defaults
             log_level = os.getenv("LOG_LEVEL", "INFO")
