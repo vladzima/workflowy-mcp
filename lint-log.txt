@@ -1,0 +1,3543 @@
+Run ruff check src/ tests/
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/__init__.py:5:1
+   |
+ 3 |   __version__ = "0.1.0"
+ 4 |
+ 5 | / from .server import mcp
+ 6 | | from .models import (
+ 7 | |     WorkFlowyNode,
+ 8 | |     NodeCreateRequest,
+ 9 | |     NodeUpdateRequest,
+10 | |     NodeListRequest,
+11 | |     APIConfiguration,
+12 | | )
+13 | | from .client import WorkFlowyClient
+   | |___________________________________^
+14 |
+15 |   __all__ = [
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/__main__.py:3:1
+  |
+1 |   """Main entry point for WorkFlowy MCP Server."""
+2 |
+3 | / import asyncio
+4 | | import sys
+5 | | from workflowy_mcp.server import mcp
+  | |____________________________________^
+  |
+help: Organize imports
+
+F401 [*] `sys` imported but unused
+ --> src/workflowy_mcp/__main__.py:4:8
+  |
+3 | import asyncio
+4 | import sys
+  |        ^^^
+5 | from workflowy_mcp.server import mcp
+  |
+help: Remove unused import: `sys`
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/client/__init__.py:3:1
+  |
+1 |   """WorkFlowy API client package."""
+2 |
+3 | / from .api_client import WorkFlowyClient
+4 | | from .retry import RetryHandler, with_retry
+5 | | from .rate_limit import RateLimiter, AdaptiveRateLimiter
+  | |________________________________________________________^
+6 |
+7 |   __all__ = [
+  |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/client/api_client.py:3:1
+   |
+ 1 |   """WorkFlowy API client implementation."""
+ 2 |
+ 3 | / import json
+ 4 | | from typing import Any, Dict, List, Optional
+ 5 | | import httpx
+ 6 | | from pydantic import SecretStr
+ 7 | |
+ 8 | | from ..models import (
+ 9 | |     WorkFlowyNode,
+10 | |     NodeCreateRequest,
+11 | |     NodeUpdateRequest,
+12 | |     NodeListRequest,
+13 | |     APIConfiguration,
+14 | |     AuthenticationError,
+15 | |     NodeNotFoundError,
+16 | |     NetworkError,
+17 | |     TimeoutError,
+18 | |     RateLimitError,
+19 | | )
+   | |_^
+   |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/client/api_client.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict, List, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | import httpx
+6 | from pydantic import SecretStr
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/workflowy_mcp/client/api_client.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict, List, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | import httpx
+6 | from pydantic import SecretStr
+  |
+
+F401 [*] `pydantic.SecretStr` imported but unused
+ --> src/workflowy_mcp/client/api_client.py:6:22
+  |
+4 | from typing import Any, Dict, List, Optional
+5 | import httpx
+6 | from pydantic import SecretStr
+  |                      ^^^^^^^^^
+7 |
+8 | from ..models import (
+  |
+help: Remove unused import: `pydantic.SecretStr`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/client/api_client.py:29:23
+   |
+27 |         self.config = config
+28 |         self.base_url = config.base_url
+29 |         self._client: Optional[httpx.AsyncClient] = None
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+30 |
+31 |     @property
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/client/api_client.py:62:67
+   |
+60 |         await self.close()
+61 |
+62 |     async def _handle_response(self, response: httpx.Response) -> Dict[str, Any]:
+   |                                                                   ^^^^
+63 |         """Handle API response and errors."""
+64 |         if response.status_code == 401:
+   |
+help: Replace with `dict`
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+  --> src/workflowy_mcp/client/api_client.py:90:13
+   |
+88 |             return response.json()
+89 |         except json.JSONDecodeError:
+90 |             raise NetworkError("Invalid response format from API")
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+91 |
+92 |     async def create_node(self, request: NodeCreateRequest) -> WorkFlowyNode:
+   |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:99:13
+    |
+ 97 |             return WorkFlowyNode(**data)
+ 98 |         except httpx.TimeoutException:
+ 99 |             raise TimeoutError("create_node")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+100 |         except httpx.NetworkError as e:
+101 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:101:13
+    |
+ 99 |             raise TimeoutError("create_node")
+100 |         except httpx.NetworkError as e:
+101 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+102 |
+103 |     async def update_node(self, node_id: str, request: NodeUpdateRequest) -> WorkFlowyNode:
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:112:13
+    |
+110 |             return WorkFlowyNode(**data)
+111 |         except httpx.TimeoutException:
+112 |             raise TimeoutError("update_node")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+113 |         except httpx.NetworkError as e:
+114 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:114:13
+    |
+112 |             raise TimeoutError("update_node")
+113 |         except httpx.NetworkError as e:
+114 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+115 |
+116 |     async def get_node(self, node_id: str) -> WorkFlowyNode:
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:123:13
+    |
+121 |             return WorkFlowyNode(**data)
+122 |         except httpx.TimeoutException:
+123 |             raise TimeoutError("get_node")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+124 |         except httpx.NetworkError as e:
+125 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:125:13
+    |
+123 |             raise TimeoutError("get_node")
+124 |         except httpx.NetworkError as e:
+125 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+126 |
+127 |     async def list_nodes(self, request: NodeListRequest) -> tuple[List[WorkFlowyNode], int]:
+    |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/workflowy_mcp/client/api_client.py:127:67
+    |
+125 |             raise NetworkError(f"Network error: {str(e)}")
+126 |
+127 |     async def list_nodes(self, request: NodeListRequest) -> tuple[List[WorkFlowyNode], int]:
+    |                                                                   ^^^^
+128 |         """List nodes with optional filtering."""
+129 |         try:
+    |
+help: Replace with `list`
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:138:13
+    |
+136 |             return nodes, total
+137 |         except httpx.TimeoutException:
+138 |             raise TimeoutError("list_nodes")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+139 |         except httpx.NetworkError as e:
+140 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:140:13
+    |
+138 |             raise TimeoutError("list_nodes")
+139 |         except httpx.NetworkError as e:
+140 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+141 |
+142 |     async def delete_node(self, node_id: str) -> bool:
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:149:13
+    |
+147 |             return True
+148 |         except httpx.TimeoutException:
+149 |             raise TimeoutError("delete_node")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+150 |         except httpx.NetworkError as e:
+151 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:151:13
+    |
+149 |             raise TimeoutError("delete_node")
+150 |         except httpx.NetworkError as e:
+151 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+152 |
+153 |     async def complete_node(self, node_id: str) -> WorkFlowyNode:
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:160:13
+    |
+158 |             return WorkFlowyNode(**data)
+159 |         except httpx.TimeoutException:
+160 |             raise TimeoutError("complete_node")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+161 |         except httpx.NetworkError as e:
+162 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:162:13
+    |
+160 |             raise TimeoutError("complete_node")
+161 |         except httpx.NetworkError as e:
+162 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+163 |
+164 |     async def uncomplete_node(self, node_id: str) -> WorkFlowyNode:
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:171:13
+    |
+169 |             return WorkFlowyNode(**data)
+170 |         except httpx.TimeoutException:
+171 |             raise TimeoutError("uncomplete_node")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+172 |         except httpx.NetworkError as e:
+173 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:173:13
+    |
+171 |             raise TimeoutError("uncomplete_node")
+172 |         except httpx.NetworkError as e:
+173 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+174 |
+175 |     async def search_nodes(self, query: str, include_completed: bool = True) -> List[WorkFlowyNode]:
+    |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/workflowy_mcp/client/api_client.py:175:81
+    |
+173 |             raise NetworkError(f"Network error: {str(e)}")
+174 |
+175 |     async def search_nodes(self, query: str, include_completed: bool = True) -> List[WorkFlowyNode]:
+    |                                                                                 ^^^^
+176 |         """Search for nodes by text content."""
+177 |         try:
+    |
+help: Replace with `list`
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:184:13
+    |
+182 |             return [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
+183 |         except httpx.TimeoutException:
+184 |             raise TimeoutError("search_nodes")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+185 |         except httpx.NetworkError as e:
+186 |             raise NetworkError(f"Network error: {str(e)}")
+    |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> src/workflowy_mcp/client/api_client.py:186:13
+    |
+184 |             raise TimeoutError("search_nodes")
+185 |         except httpx.NetworkError as e:
+186 |             raise NetworkError(f"Network error: {str(e)}")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/client/rate_limit.py:3:1
+  |
+1 |   """Rate limiting handler for WorkFlowy API requests."""
+2 |
+3 | / import asyncio
+4 | | import time
+5 | | from typing import Optional, Dict, Any
+6 | | from collections import deque
+7 | | import logging
+  | |______________^
+8 |
+9 |   logger = logging.getLogger(__name__)
+  |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/client/rate_limit.py:5:1
+  |
+3 | import asyncio
+4 | import time
+5 | from typing import Optional, Dict, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+6 | from collections import deque
+7 | import logging
+  |
+
+F401 [*] `typing.Dict` imported but unused
+ --> src/workflowy_mcp/client/rate_limit.py:5:30
+  |
+3 | import asyncio
+4 | import time
+5 | from typing import Optional, Dict, Any
+  |                              ^^^^
+6 | from collections import deque
+7 | import logging
+  |
+help: Remove unused import
+
+F401 [*] `typing.Any` imported but unused
+ --> src/workflowy_mcp/client/rate_limit.py:5:36
+  |
+3 | import asyncio
+4 | import time
+5 | from typing import Optional, Dict, Any
+  |                                    ^^^
+6 | from collections import deque
+7 | import logging
+  |
+help: Remove unused import
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/client/rate_limit.py:18:21
+   |
+16 |         self,
+17 |         requests_per_second: float = 10.0,
+18 |         burst_size: Optional[int] = None,
+   |                     ^^^^^^^^^^^^^
+19 |         retry_after_header: bool = True,
+20 |     ):
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/client/rate_limit.py:42:33
+   |
+41 |         # Track retry-after if we hit rate limits
+42 |         self.retry_after_until: Optional[float] = None
+   |                                 ^^^^^^^^^^^^^^^
+43 |
+44 |     async def acquire(self, cost: float = 1.0) -> None:
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/client/rate_limit.py:148:42
+    |
+146 |                 self.consecutive_successes = 0
+147 |
+148 |     def on_rate_limit(self, retry_after: Optional[int] = None) -> None:
+    |                                          ^^^^^^^^^^^^^
+149 |         """Called when we hit a rate limit."""
+150 |         self.consecutive_failures += 1
+    |
+help: Convert to `X | None`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/client/retry.py:3:1
+   |
+ 1 |   """Retry logic with exponential backoff for API requests."""
+ 2 |
+ 3 | / import asyncio
+ 4 | | import random
+ 5 | | from typing import TypeVar, Callable, Optional, Any
+ 6 | | from functools import wraps
+ 7 | | import logging
+ 8 | |
+ 9 | | from ..models.errors import RateLimitError, NetworkError, TimeoutError
+   | |______________________________________________________________________^
+10 |
+11 |   logger = logging.getLogger(__name__)
+   |
+help: Organize imports
+
+UP035 [*] Import from `collections.abc` instead: `Callable`
+ --> src/workflowy_mcp/client/retry.py:5:1
+  |
+3 | import asyncio
+4 | import random
+5 | from typing import TypeVar, Callable, Optional, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+6 | from functools import wraps
+7 | import logging
+  |
+help: Import from `collections.abc`
+
+F401 [*] `typing.Optional` imported but unused
+ --> src/workflowy_mcp/client/retry.py:5:39
+  |
+3 | import asyncio
+4 | import random
+5 | from typing import TypeVar, Callable, Optional, Any
+  |                                       ^^^^^^^^
+6 | from functools import wraps
+7 | import logging
+  |
+help: Remove unused import: `typing.Optional`
+
+F541 [*] f-string without any placeholders
+  --> src/workflowy_mcp/client/retry.py:64:34
+   |
+62 |                     await asyncio.sleep(delay)
+63 |                 else:
+64 |                     logger.error(f"Max retries reached for rate limit error")
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 |                     raise
+   |
+help: Remove extraneous `f` prefix
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/config.py:3:1
+   |
+ 1 |   """Configuration management for WorkFlowy MCP server."""
+ 2 |
+ 3 | / import os
+ 4 | | import logging
+ 5 | | import logging.handlers
+ 6 | | from pathlib import Path
+ 7 | | from typing import Optional
+ 8 | |
+ 9 | | from .models.config import ServerConfig
+   | |_______________________________________^
+10 |
+11 |   # Only load .env in development mode or if explicitly requested
+   |
+help: Organize imports
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/config.py:23:27
+   |
+23 | def setup_logging(config: Optional[ServerConfig] = None) -> None:
+   |                           ^^^^^^^^^^^^^^^^^^^^^^
+24 |     """Setup logging configuration.
+   |
+help: Convert to `X | None`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/middleware/errors.py:3:1
+   |
+ 1 |   """Error handling middleware for WorkFlowy MCP Server."""
+ 2 |
+ 3 | / import traceback
+ 4 | | from typing import Any, Callable, Dict
+ 5 | | from functools import wraps
+ 6 | | import httpx
+ 7 | |
+ 8 | | from workflowy_mcp.models.errors import (
+ 9 | |     WorkFlowyError,
+10 | |     APIError,
+11 | |     ValidationError,
+12 | |     RateLimitError,
+13 | |     AuthenticationError,
+14 | | )
+   | |_^
+   |
+help: Organize imports
+
+UP035 [*] Import from `collections.abc` instead: `Callable`
+ --> src/workflowy_mcp/middleware/errors.py:4:1
+  |
+3 | import traceback
+4 | from typing import Any, Callable, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from functools import wraps
+6 | import httpx
+  |
+help: Import from `collections.abc`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/middleware/errors.py:4:1
+  |
+3 | import traceback
+4 | from typing import Any, Callable, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from functools import wraps
+6 | import httpx
+  |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/middleware/errors.py:21:43
+   |
+20 |     @wraps(func)
+21 |     async def wrapper(*args, **kwargs) -> Dict[str, Any]:
+   |                                           ^^^^
+22 |         try:
+23 |             return await func(*args, **kwargs)
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/middleware/errors.py:92:27
+   |
+90 |         """Initialize error middleware."""
+91 |         self.error_count = 0
+92 |         self.error_types: Dict[str, int] = {}
+   |                           ^^^^
+93 |
+94 |     def track_error(self, error_type: str) -> None:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/errors.py:99:34
+    |
+ 97 |         self.error_types[error_type] = self.error_types.get(error_type, 0) + 1
+ 98 |
+ 99 |     def get_error_stats(self) -> Dict[str, Any]:
+    |                                  ^^^^
+100 |         """Get error statistics."""
+101 |         return {"total_errors": self.error_count, "error_types": self.error_types.copy()}
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/errors.py:108:61
+    |
+106 |         self.error_types.clear()
+107 |
+108 |     async def handle_error(self, error: Exception, context: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                             ^^^^
+109 |         """
+110 |         Handle an error with context information.
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/errors.py:108:80
+    |
+106 |         self.error_types.clear()
+107 |
+108 |     async def handle_error(self, error: Exception, context: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                                                ^^^^
+109 |         """
+110 |         Handle an error with context information.
+    |
+help: Replace with `dict`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/middleware/logging.py:3:1
+   |
+ 1 |   """Logging middleware for WorkFlowy MCP Server."""
+ 2 |
+ 3 | / import json
+ 4 | | import time
+ 5 | | import logging
+ 6 | | from typing import Any, Callable, Dict, Optional
+ 7 | | from functools import wraps
+ 8 | | from datetime import datetime
+   | |_____________________________^
+ 9 |
+10 |   # Configure structured logging
+   |
+help: Organize imports
+
+UP035 [*] Import from `collections.abc` instead: `Callable`
+ --> src/workflowy_mcp/middleware/logging.py:6:1
+  |
+4 | import time
+5 | import logging
+6 | from typing import Any, Callable, Dict, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | from functools import wraps
+8 | from datetime import datetime
+  |
+help: Import from `collections.abc`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/middleware/logging.py:6:1
+  |
+4 | import time
+5 | import logging
+6 | from typing import Any, Callable, Dict, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | from functools import wraps
+8 | from datetime import datetime
+  |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/middleware/logging.py:22:43
+   |
+21 |     @wraps(func)
+22 |     async def wrapper(*args, **kwargs) -> Dict[str, Any]:
+   |                                           ^^^^
+23 |         start_time = time.time()
+24 |         request_id = f"{func.__name__}_{int(start_time * 1000)}"
+   |
+help: Replace with `dict`
+
+UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+  --> src/workflowy_mcp/middleware/logging.py:94:10
+   |
+92 |                 sanitized[key] = _sanitize_for_logging(value, max_length)
+93 |         return sanitized
+94 |     elif isinstance(data, (list, tuple)):
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+95 |         return [_sanitize_for_logging(item, max_length) for item in data[:10]]  # Limit array size
+96 |     elif isinstance(data, str):
+   |
+help: Convert to `X | Y`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/logging.py:113:26
+    |
+111 |         self.request_count = 0
+112 |         self.request_times: list[float] = []
+113 |         self.tool_usage: Dict[str, int] = {}
+    |                          ^^^^
+114 |
+115 |     def log_request(
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/logging.py:116:39
+    |
+115 |     def log_request(
+116 |         self, tool_name: str, params: Dict[str, Any], request_id: Optional[str] = None
+    |                                       ^^^^
+117 |     ) -> str:
+118 |         """
+    |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/middleware/logging.py:116:67
+    |
+115 |     def log_request(
+116 |         self, tool_name: str, params: Dict[str, Any], request_id: Optional[str] = None
+    |                                                                   ^^^^^^^^^^^^^
+117 |     ) -> str:
+118 |         """
+    |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/logging.py:143:58
+    |
+142 |     def log_response(
+143 |         self, request_id: str, tool_name: str, response: Dict[str, Any], execution_time: float
+    |                                                          ^^^^
+144 |     ) -> None:
+145 |         """Log a response."""
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/logging.py:177:28
+    |
+175 |         )
+176 |
+177 |     def get_stats(self) -> Dict[str, Any]:
+    |                            ^^^^
+178 |         """Get logging statistics."""
+179 |         avg_time = sum(self.request_times) / len(self.request_times) if self.request_times else 0
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/middleware/logging.py:187:40
+    |
+185 |         }
+186 |
+187 |     def log_server_start(self, config: Dict[str, Any]) -> None:
+    |                                        ^^^^
+188 |         """Log server startup."""
+189 |         self.logger.info(
+    |
+help: Replace with `dict`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/models/__init__.py:3:1
+   |
+ 1 |   """WorkFlowy MCP models package."""
+ 2 |
+ 3 | / from .node import WorkFlowyNode
+ 4 | | from .requests import (
+ 5 | |     NodeCreateRequest,
+ 6 | |     NodeUpdateRequest,
+ 7 | |     NodeListRequest,
+ 8 | |     NodeResponse,
+ 9 | |     NodeListResponse,
+10 | |     DeleteResponse,
+11 | |     SearchRequest,
+12 | |     SearchResponse,
+13 | | )
+14 | | from .config import APIConfiguration
+15 | | from .errors import (
+16 | |     ErrorResponse,
+17 | |     WorkFlowyError,
+18 | |     AuthenticationError,
+19 | |     NodeNotFoundError,
+20 | |     ValidationError,
+21 | |     RateLimitError,
+22 | |     NetworkError,
+23 | |     TimeoutError,
+24 | | )
+   | |_^
+25 |
+26 |   __all__ = [
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/models/config.py:3:1
+  |
+1 |   """Configuration models for WorkFlowy MCP server."""
+2 |
+3 | / from typing import Optional
+4 | | from pydantic import BaseModel, Field, field_validator, SecretStr
+5 | | from pydantic_settings import BaseSettings
+  | |__________________________________________^
+  |
+help: Organize imports
+
+F401 [*] `typing.Optional` imported but unused
+ --> src/workflowy_mcp/models/config.py:3:20
+  |
+1 | """Configuration models for WorkFlowy MCP server."""
+2 |
+3 | from typing import Optional
+  |                    ^^^^^^^^
+4 | from pydantic import BaseModel, Field, field_validator, SecretStr
+5 | from pydantic_settings import BaseSettings
+  |
+help: Remove unused import: `typing.Optional`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/models/errors.py:3:1
+  |
+1 | """Error response models and exception classes."""
+2 |
+3 | from typing import Optional, Dict, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | from pydantic import BaseModel, Field
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/models/errors.py:3:1
+  |
+1 |   """Error response models and exception classes."""
+2 |
+3 | / from typing import Optional, Dict, Any
+4 | | from pydantic import BaseModel, Field
+  | |_____________________________________^
+  |
+help: Organize imports
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:12:14
+   |
+10 |     error: str = Field(..., description="Error message")
+11 |     code: str = Field(..., description="Error code")
+12 |     details: Optional[Dict[str, Any]] = Field(None, description="Additional error context")
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^
+13 |     success: bool = Field(False, description="Always false for errors")
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/models/errors.py:12:23
+   |
+10 |     error: str = Field(..., description="Error message")
+11 |     code: str = Field(..., description="Error code")
+12 |     details: Optional[Dict[str, Any]] = Field(None, description="Additional error context")
+   |                       ^^^^
+13 |     success: bool = Field(False, description="Always false for errors")
+   |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:32:69
+   |
+31 |     def __init__(
+32 |         self, message: str, code: str = "WORKFLOWY_ERROR", details: Optional[Dict[str, Any]] = None
+   |                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+33 |     ):
+34 |         """Initialize the error."""
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/models/errors.py:32:78
+   |
+31 |     def __init__(
+32 |         self, message: str, code: str = "WORKFLOWY_ERROR", details: Optional[Dict[str, Any]] = None
+   |                                                                              ^^^^
+33 |     ):
+34 |         """Initialize the error."""
+   |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:49:64
+   |
+48 |     def __init__(
+49 |         self, message: str = "Authentication failed", details: Optional[Dict[str, Any]] = None
+   |                                                                ^^^^^^^^^^^^^^^^^^^^^^^^
+50 |     ):
+51 |         """Initialize authentication error."""
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/models/errors.py:49:73
+   |
+48 |     def __init__(
+49 |         self, message: str = "Authentication failed", details: Optional[Dict[str, Any]] = None
+   |                                                                         ^^^^
+50 |     ):
+51 |         """Initialize authentication error."""
+   |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:58:47
+   |
+56 |     """Raised when a requested node doesn't exist."""
+57 |
+58 |     def __init__(self, node_id: str, message: Optional[str] = None):
+   |                                               ^^^^^^^^^^^^^
+59 |         """Initialize node not found error."""
+60 |         msg = message or f"Node with ID '{node_id}' not found"
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:67:45
+   |
+65 |     """Raised when input validation fails."""
+66 |
+67 |     def __init__(self, message: str, field: Optional[str] = None):
+   |                                             ^^^^^^^^^^^^^
+68 |         """Initialize validation error."""
+69 |         details = {"field": field} if field else {}
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:76:37
+   |
+74 |     """Raised when API rate limit is exceeded."""
+75 |
+76 |     def __init__(self, retry_after: Optional[int] = None):
+   |                                     ^^^^^^^^^^^^^
+77 |         """Initialize rate limit error."""
+78 |         message = "Rate limit exceeded"
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/errors.py:90:65
+   |
+89 |     def __init__(
+90 |         self, message: str = "Network error occurred", details: Optional[Dict[str, Any]] = None
+   |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+91 |     ):
+92 |         """Initialize network error."""
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/models/errors.py:90:74
+   |
+89 |     def __init__(
+90 |         self, message: str = "Network error occurred", details: Optional[Dict[str, Any]] = None
+   |                                                                          ^^^^
+91 |     ):
+92 |         """Initialize network error."""
+   |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/models/errors.py:99:35
+    |
+ 97 |     """Raised when operations timeout."""
+ 98 |
+ 99 |     def __init__(self, operation: Optional[str] = None):
+    |                                   ^^^^^^^^^^^^^
+100 |         """Initialize timeout error."""
+101 |         message = f"Operation '{operation}' timed out" if operation else "Request timed out"
+    |
+help: Convert to `X | None`
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/workflowy_mcp/models/node.py:3:1
+  |
+1 | """WorkFlowy node data model."""
+2 |
+3 | from typing import List, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | from pydantic import BaseModel, Field, field_validator
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/models/node.py:3:1
+  |
+1 |   """WorkFlowy node data model."""
+2 |
+3 | / from typing import List, Optional
+4 | | from pydantic import BaseModel, Field, field_validator
+  | |______________________________________________________^
+  |
+help: Organize imports
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:11:9
+   |
+10 |     id: str = Field(..., description="Unique identifier for the node")
+11 |     nm: Optional[str] = Field(None, description="Name/text content of the node")
+   |         ^^^^^^^^^^^^^
+12 |     no: Optional[str] = Field(None, description="Note content attached to the node")
+13 |     cp: bool = Field(False, description="Completion status (true if completed)")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:12:9
+   |
+10 |     id: str = Field(..., description="Unique identifier for the node")
+11 |     nm: Optional[str] = Field(None, description="Name/text content of the node")
+12 |     no: Optional[str] = Field(None, description="Note content attached to the node")
+   |         ^^^^^^^^^^^^^
+13 |     cp: bool = Field(False, description="Completion status (true if completed)")
+14 |     ch: Optional[List["WorkFlowyNode"]] = Field(None, description="Child nodes")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:14:9
+   |
+12 |     no: Optional[str] = Field(None, description="Note content attached to the node")
+13 |     cp: bool = Field(False, description="Completion status (true if completed)")
+14 |     ch: Optional[List["WorkFlowyNode"]] = Field(None, description="Child nodes")
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |     created: int = Field(..., description="Creation timestamp (Unix timestamp)")
+16 |     modified: int = Field(..., description="Last modification timestamp")
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/workflowy_mcp/models/node.py:14:18
+   |
+12 |     no: Optional[str] = Field(None, description="Note content attached to the node")
+13 |     cp: bool = Field(False, description="Completion status (true if completed)")
+14 |     ch: Optional[List["WorkFlowyNode"]] = Field(None, description="Child nodes")
+   |                  ^^^^
+15 |     created: int = Field(..., description="Creation timestamp (Unix timestamp)")
+16 |     modified: int = Field(..., description="Last modification timestamp")
+   |
+help: Replace with `list`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:17:15
+   |
+15 |     created: int = Field(..., description="Creation timestamp (Unix timestamp)")
+16 |     modified: int = Field(..., description="Last modification timestamp")
+17 |     priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (0-3)")
+   |               ^^^^^^^^^^^^^
+18 |     layout_mode: Optional[str] = Field(None, description="Display layout mode")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:18:18
+   |
+16 |     modified: int = Field(..., description="Last modification timestamp")
+17 |     priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (0-3)")
+18 |     layout_mode: Optional[str] = Field(None, description="Display layout mode")
+   |                  ^^^^^^^^^^^^^
+19 |
+20 |     @field_validator("id")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:38:35
+   |
+36 |     @field_validator("priority")
+37 |     @classmethod
+38 |     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+   |                                   ^^^^^^^^^^^^^
+39 |         """Ensure priority is within valid range."""
+40 |         if v is not None and (v < 0 or v > 3):
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/node.py:38:53
+   |
+36 |     @field_validator("priority")
+37 |     @classmethod
+38 |     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+   |                                                     ^^^^^^^^^^^^^
+39 |         """Ensure priority is within valid range."""
+40 |         if v is not None and (v < 0 or v > 3):
+   |
+help: Convert to `X | None`
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/workflowy_mcp/models/requests.py:3:1
+  |
+1 | """Request and response models for WorkFlowy operations."""
+2 |
+3 | from typing import List, Optional, Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | from pydantic import BaseModel, Field, field_validator
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/models/requests.py:3:1
+  |
+1 | """Request and response models for WorkFlowy operations."""
+2 |
+3 | from typing import List, Optional, Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | from pydantic import BaseModel, Field, field_validator
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/workflowy_mcp/models/requests.py:3:1
+  |
+1 |   """Request and response models for WorkFlowy operations."""
+2 |
+3 | / from typing import List, Optional, Any, Dict
+4 | | from pydantic import BaseModel, Field, field_validator
+5 | |
+6 | | from .node import WorkFlowyNode
+  | |_______________________________^
+  |
+help: Organize imports
+
+F401 [*] `typing.Any` imported but unused
+ --> src/workflowy_mcp/models/requests.py:3:36
+  |
+1 | """Request and response models for WorkFlowy operations."""
+2 |
+3 | from typing import List, Optional, Any, Dict
+  |                                    ^^^
+4 | from pydantic import BaseModel, Field, field_validator
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> src/workflowy_mcp/models/requests.py:3:41
+  |
+1 | """Request and response models for WorkFlowy operations."""
+2 |
+3 | from typing import List, Optional, Any, Dict
+  |                                         ^^^^
+4 | from pydantic import BaseModel, Field, field_validator
+  |
+help: Remove unused import
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:12:15
+   |
+10 |     """Request payload for creating a new node."""
+11 |
+12 |     parentId: Optional[str] = Field(None, description="Parent node ID (null for root level)")
+   |               ^^^^^^^^^^^^^
+13 |     nm: str = Field(..., description="Name/text content (required)")
+14 |     no: Optional[str] = Field(None, description="Note content (optional)")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:14:9
+   |
+12 |     parentId: Optional[str] = Field(None, description="Parent node ID (null for root level)")
+13 |     nm: str = Field(..., description="Name/text content (required)")
+14 |     no: Optional[str] = Field(None, description="Note content (optional)")
+   |         ^^^^^^^^^^^^^
+15 |     priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (optional)")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:15:15
+   |
+13 |     nm: str = Field(..., description="Name/text content (required)")
+14 |     no: Optional[str] = Field(None, description="Note content (optional)")
+15 |     priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (optional)")
+   |               ^^^^^^^^^^^^^
+16 |
+17 |     @field_validator("nm")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:27:35
+   |
+25 |     @field_validator("priority")
+26 |     @classmethod
+27 |     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+   |                                   ^^^^^^^^^^^^^
+28 |         """Ensure priority is within valid range."""
+29 |         if v is not None and (v < 0 or v > 3):
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:27:53
+   |
+25 |     @field_validator("priority")
+26 |     @classmethod
+27 |     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+   |                                                     ^^^^^^^^^^^^^
+28 |         """Ensure priority is within valid range."""
+29 |         if v is not None and (v < 0 or v > 3):
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:37:9
+   |
+35 |     """Request payload for updating an existing node."""
+36 |
+37 |     nm: Optional[str] = Field(None, description="New name/text content")
+   |         ^^^^^^^^^^^^^
+38 |     no: Optional[str] = Field(None, description="New note content")
+39 |     priority: Optional[int] = Field(None, ge=0, le=3, description="New priority level")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:38:9
+   |
+37 |     nm: Optional[str] = Field(None, description="New name/text content")
+38 |     no: Optional[str] = Field(None, description="New note content")
+   |         ^^^^^^^^^^^^^
+39 |     priority: Optional[int] = Field(None, ge=0, le=3, description="New priority level")
+40 |     parentId: Optional[str] = Field(None, description="New parent (for moving nodes)")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:39:15
+   |
+37 |     nm: Optional[str] = Field(None, description="New name/text content")
+38 |     no: Optional[str] = Field(None, description="New note content")
+39 |     priority: Optional[int] = Field(None, ge=0, le=3, description="New priority level")
+   |               ^^^^^^^^^^^^^
+40 |     parentId: Optional[str] = Field(None, description="New parent (for moving nodes)")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:40:15
+   |
+38 |     no: Optional[str] = Field(None, description="New note content")
+39 |     priority: Optional[int] = Field(None, ge=0, le=3, description="New priority level")
+40 |     parentId: Optional[str] = Field(None, description="New parent (for moving nodes)")
+   |               ^^^^^^^^^^^^^
+41 |
+42 |     @field_validator("priority")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:44:35
+   |
+42 |     @field_validator("priority")
+43 |     @classmethod
+44 |     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+   |                                   ^^^^^^^^^^^^^
+45 |         """Ensure priority is within valid range."""
+46 |         if v is not None and (v < 0 or v > 3):
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:44:53
+   |
+42 |     @field_validator("priority")
+43 |     @classmethod
+44 |     def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+   |                                                     ^^^^^^^^^^^^^
+45 |         """Ensure priority is within valid range."""
+46 |         if v is not None and (v < 0 or v > 3):
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:58:15
+   |
+56 |     """Request parameters for listing/searching nodes."""
+57 |
+58 |     parentId: Optional[str] = Field(None, description="Filter by parent node")
+   |               ^^^^^^^^^^^^^
+59 |     completed: Optional[bool] = Field(None, description="Filter by completion status")
+60 |     query: Optional[str] = Field(None, description="Search query for text content")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:59:16
+   |
+58 |     parentId: Optional[str] = Field(None, description="Filter by parent node")
+59 |     completed: Optional[bool] = Field(None, description="Filter by completion status")
+   |                ^^^^^^^^^^^^^^
+60 |     query: Optional[str] = Field(None, description="Search query for text content")
+61 |     limit: int = Field(100, ge=1, le=1000, description="Maximum results")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:60:12
+   |
+58 |     parentId: Optional[str] = Field(None, description="Filter by parent node")
+59 |     completed: Optional[bool] = Field(None, description="Filter by completion status")
+60 |     query: Optional[str] = Field(None, description="Search query for text content")
+   |            ^^^^^^^^^^^^^
+61 |     limit: int = Field(100, ge=1, le=1000, description="Maximum results")
+62 |     offset: int = Field(0, ge=0, description="Pagination offset")
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:88:14
+   |
+86 |     node: WorkFlowyNode
+87 |     success: bool = True
+88 |     message: Optional[str] = None
+   |              ^^^^^^^^^^^^^
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/workflowy_mcp/models/requests.py:94:12
+   |
+92 |     """Response for listing multiple nodes."""
+93 |
+94 |     nodes: List[WorkFlowyNode]
+   |            ^^^^
+95 |     total: int
+96 |     success: bool = True
+   |
+help: Replace with `list`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/models/requests.py:98:17
+   |
+96 |     success: bool = True
+97 |     hasMore: bool = False
+98 |     nextOffset: Optional[int] = None
+   |                 ^^^^^^^^^^^^^
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/models/requests.py:107:13
+    |
+105 |     deleted: bool = True
+106 |     message: str = "Node deleted successfully"
+107 |     nodeId: Optional[str] = None
+    |             ^^^^^^^^^^^^^
+    |
+help: Convert to `X | None`
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/workflowy_mcp/models/requests.py:128:12
+    |
+126 |     """Response for search operations."""
+127 |
+128 |     nodes: List[WorkFlowyNode]
+    |            ^^^^
+129 |     total: int
+130 |     query: str
+    |
+help: Replace with `list`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/server.py:3:1
+   |
+ 1 |   """WorkFlowy MCP server implementation using FastMCP."""
+ 2 |
+ 3 | / import os
+ 4 | | import logging
+ 5 | | from typing import Optional
+ 6 | | from contextlib import asynccontextmanager
+ 7 | |
+ 8 | | from fastmcp import FastMCP
+ 9 | | from pydantic import SecretStr
+10 | |
+11 | | from .models import (
+12 | |     APIConfiguration,
+13 | |     NodeCreateRequest,
+14 | |     NodeUpdateRequest,
+15 | |     NodeListRequest,
+16 | |     WorkFlowyNode,
+17 | | )
+18 | | from .client import WorkFlowyClient, AdaptiveRateLimiter
+19 | | from .config import ServerConfig, setup_logging
+   | |_______________________________________________^
+20 |
+21 |   logger = logging.getLogger(__name__)
+   |
+help: Organize imports
+
+F401 [*] `os` imported but unused
+ --> src/workflowy_mcp/server.py:3:8
+  |
+1 | """WorkFlowy MCP server implementation using FastMCP."""
+2 |
+3 | import os
+  |        ^^
+4 | import logging
+5 | from typing import Optional
+  |
+help: Remove unused import: `os`
+
+F401 [*] `pydantic.SecretStr` imported but unused
+  --> src/workflowy_mcp/server.py:9:22
+   |
+ 8 | from fastmcp import FastMCP
+ 9 | from pydantic import SecretStr
+   |                      ^^^^^^^^^
+10 |
+11 | from .models import (
+   |
+help: Remove unused import: `pydantic.SecretStr`
+
+F401 [*] `.models.APIConfiguration` imported but unused
+  --> src/workflowy_mcp/server.py:12:5
+   |
+11 | from .models import (
+12 |     APIConfiguration,
+   |     ^^^^^^^^^^^^^^^^
+13 |     NodeCreateRequest,
+14 |     NodeUpdateRequest,
+   |
+help: Remove unused import: `.models.APIConfiguration`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/server.py:24:10
+   |
+23 | # Global client instance
+24 | _client: Optional[WorkFlowyClient] = None
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^
+25 | _rate_limiter: Optional[AdaptiveRateLimiter] = None
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/server.py:25:16
+   |
+23 | # Global client instance
+24 | _client: Optional[WorkFlowyClient] = None
+25 | _rate_limiter: Optional[AdaptiveRateLimiter] = None
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+help: Convert to `X | None`
+
+ARG001 Unused function argument: `app`
+  --> src/workflowy_mcp/server.py:37:20
+   |
+36 | @asynccontextmanager
+37 | async def lifespan(app: FastMCP):
+   |                    ^^^
+38 |     """Manage server lifecycle."""
+39 |     global _client, _rate_limiter
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/server.py:83:16
+   |
+81 | async def create_node(
+82 |     name: str,
+83 |     parent_id: Optional[str] = None,
+   |                ^^^^^^^^^^^^^
+84 |     note: Optional[str] = None,
+85 |     completed: bool = False,
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/server.py:84:11
+   |
+82 |     name: str,
+83 |     parent_id: Optional[str] = None,
+84 |     note: Optional[str] = None,
+   |           ^^^^^^^^^^^^^
+85 |     completed: bool = False,
+86 | ) -> WorkFlowyNode:
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/server.py:125:11
+    |
+123 | async def update_node(
+124 |     node_id: str,
+125 |     name: Optional[str] = None,
+    |           ^^^^^^^^^^^^^
+126 |     note: Optional[str] = None,
+127 |     completed: Optional[bool] = None,
+    |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/server.py:126:11
+    |
+124 |     node_id: str,
+125 |     name: Optional[str] = None,
+126 |     note: Optional[str] = None,
+    |           ^^^^^^^^^^^^^
+127 |     completed: Optional[bool] = None,
+128 | ) -> WorkFlowyNode:
+    |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/server.py:127:16
+    |
+125 |     name: Optional[str] = None,
+126 |     note: Optional[str] = None,
+127 |     completed: Optional[bool] = None,
+    |                ^^^^^^^^^^^^^^
+128 | ) -> WorkFlowyNode:
+129 |     """Update an existing WorkFlowy node.
+    |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/server.py:192:16
+    |
+190 | @mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes with optional filtering")
+191 | async def list_nodes(
+192 |     parent_id: Optional[str] = None,
+    |                ^^^^^^^^^^^^^
+193 |     include_completed: bool = True,
+194 |     max_depth: Optional[int] = None,
+    |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/server.py:194:16
+    |
+192 |     parent_id: Optional[str] = None,
+193 |     include_completed: bool = True,
+194 |     max_depth: Optional[int] = None,
+    |                ^^^^^^^^^^^^^
+195 |     limit: int = 100,
+196 |     offset: int = 0,
+    |
+help: Convert to `X | None`
+
+F401 [*] `sys` imported but unused
+   --> src/workflowy_mcp/server.py:409:12
+    |
+408 |     # Run the server
+409 |     import sys
+    |            ^^^
+410 |
+411 |     mcp.run(transport="stdio")
+    |
+help: Remove unused import: `sys`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/workflowy_mcp/transport.py:3:1
+   |
+ 1 |   """STDIO transport handler for WorkFlowy MCP Server."""
+ 2 |
+ 3 | / import sys
+ 4 | | import json
+ 5 | | import asyncio
+ 6 | | from typing import Any, Dict, Optional
+ 7 | | from dataclasses import dataclass
+ 8 | | import logging
+   | |______________^
+ 9 |
+10 |   logger = logging.getLogger(__name__)
+   |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/workflowy_mcp/transport.py:6:1
+  |
+4 | import json
+5 | import asyncio
+6 | from typing import Any, Dict, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | from dataclasses import dataclass
+8 | import logging
+  |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/transport.py:18:9
+   |
+17 |     jsonrpc: str = "2.0"
+18 |     id: Optional[int] = None
+   |         ^^^^^^^^^^^^^
+19 |     method: Optional[str] = None
+20 |     params: Optional[Dict[str, Any]] = None
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/transport.py:19:13
+   |
+17 |     jsonrpc: str = "2.0"
+18 |     id: Optional[int] = None
+19 |     method: Optional[str] = None
+   |             ^^^^^^^^^^^^^
+20 |     params: Optional[Dict[str, Any]] = None
+21 |     result: Optional[Any] = None
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/transport.py:20:13
+   |
+18 |     id: Optional[int] = None
+19 |     method: Optional[str] = None
+20 |     params: Optional[Dict[str, Any]] = None
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^
+21 |     result: Optional[Any] = None
+22 |     error: Optional[Dict[str, Any]] = None
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/transport.py:20:22
+   |
+18 |     id: Optional[int] = None
+19 |     method: Optional[str] = None
+20 |     params: Optional[Dict[str, Any]] = None
+   |                      ^^^^
+21 |     result: Optional[Any] = None
+22 |     error: Optional[Dict[str, Any]] = None
+   |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/transport.py:21:13
+   |
+19 |     method: Optional[str] = None
+20 |     params: Optional[Dict[str, Any]] = None
+21 |     result: Optional[Any] = None
+   |             ^^^^^^^^^^^^^
+22 |     error: Optional[Dict[str, Any]] = None
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/transport.py:22:12
+   |
+20 |     params: Optional[Dict[str, Any]] = None
+21 |     result: Optional[Any] = None
+22 |     error: Optional[Dict[str, Any]] = None
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/workflowy_mcp/transport.py:22:21
+   |
+20 |     params: Optional[Dict[str, Any]] = None
+21 |     result: Optional[Any] = None
+22 |     error: Optional[Dict[str, Any]] = None
+   |                     ^^^^
+   |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/workflowy_mcp/transport.py:63:37
+   |
+61 |             await self.writer.wait_closed()
+62 |
+63 |     async def read_message(self) -> Optional[Message]:
+   |                                     ^^^^^^^^^^^^^^^^^
+64 |         """
+65 |         Read a message from stdin.
+   |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/transport.py:154:55
+    |
+152 |             logger.error(f"Error writing message: {e}")
+153 |
+154 |     async def send_request(self, method: str, params: Optional[Dict[str, Any]] = None) -> int:
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+155 |         """
+156 |         Send a request message.
+    |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/transport.py:154:64
+    |
+152 |             logger.error(f"Error writing message: {e}")
+153 |
+154 |     async def send_request(self, method: str, params: Optional[Dict[str, Any]] = None) -> int:
+    |                                                                ^^^^
+155 |         """
+156 |         Send a request message.
+    |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/transport.py:171:40
+    |
+170 |     async def send_response(
+171 |         self, request_id: int, result: Optional[Any] = None, error: Optional[Dict[str, Any]] = None
+    |                                        ^^^^^^^^^^^^^
+172 |     ) -> None:
+173 |         """
+    |
+help: Convert to `X | None`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/transport.py:171:69
+    |
+170 |     async def send_response(
+171 |         self, request_id: int, result: Optional[Any] = None, error: Optional[Dict[str, Any]] = None
+    |                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+172 |     ) -> None:
+173 |         """
+    |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/transport.py:171:78
+    |
+170 |     async def send_response(
+171 |         self, request_id: int, result: Optional[Any] = None, error: Optional[Dict[str, Any]] = None
+    |                                                                              ^^^^
+172 |     ) -> None:
+173 |         """
+    |
+help: Replace with `dict`
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/workflowy_mcp/transport.py:184:60
+    |
+182 |         await self.write_message(message)
+183 |
+184 |     async def send_notification(self, method: str, params: Optional[Dict[str, Any]] = None) -> None:
+    |                                                            ^^^^^^^^^^^^^^^^^^^^^^^^
+185 |         """
+186 |         Send a notification message (no response expected).
+    |
+help: Convert to `X | None`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/transport.py:184:69
+    |
+182 |         await self.write_message(message)
+183 |
+184 |     async def send_notification(self, method: str, params: Optional[Dict[str, Any]] = None) -> None:
+    |                                                                     ^^^^
+185 |         """
+186 |         Send a notification message (no response expected).
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/workflowy_mcp/transport.py:202:24
+    |
+200 |         """Initialize transport manager."""
+201 |         self.transport = STDIOTransport()
+202 |         self.handlers: Dict[str, Any] = {}
+    |                        ^^^^
+203 |
+204 |     def register_handler(self, method: str, handler: Any) -> None:
+    |
+help: Replace with `dict`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/conftest.py:3:1
+   |
+ 1 |   """Shared test fixtures and configuration for WorkFlowy MCP tests."""
+ 2 |
+ 3 | / import sys
+ 4 | | import os
+ 5 | | from pathlib import Path
+ 6 | | import asyncio
+ 7 | | from typing import Any, AsyncGenerator, Dict
+ 8 | | from unittest.mock import AsyncMock, MagicMock
+ 9 | |
+10 | | import pytest
+11 | | import pytest_asyncio
+12 | | from fastmcp import FastMCP
+   | |___________________________^
+13 |
+14 |   # Add src to path for imports
+   |
+help: Organize imports
+
+UP035 [*] Import from `collections.abc` instead: `AsyncGenerator`
+ --> tests/conftest.py:7:1
+  |
+5 | from pathlib import Path
+6 | import asyncio
+7 | from typing import Any, AsyncGenerator, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8 | from unittest.mock import AsyncMock, MagicMock
+  |
+help: Import from `collections.abc`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/conftest.py:7:1
+  |
+5 | from pathlib import Path
+6 | import asyncio
+7 | from typing import Any, AsyncGenerator, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8 | from unittest.mock import AsyncMock, MagicMock
+  |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/conftest.py:49:27
+   |
+48 | @pytest.fixture
+49 | def sample_node_data() -> Dict[str, Any]:
+   |                           ^^^^
+50 |     """Provide sample WorkFlowy node data."""
+51 |     return {
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/conftest.py:63:32
+   |
+62 | @pytest.fixture
+63 | def sample_create_request() -> Dict[str, Any]:
+   |                                ^^^^
+64 |     """Provide sample create node request data."""
+65 |     return {
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/conftest.py:74:32
+   |
+73 | @pytest.fixture
+74 | def sample_update_request() -> Dict[str, Any]:
+   |                                ^^^^
+75 |     """Provide sample update node request data."""
+76 |     return {
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/conftest.py:85:30
+   |
+84 | @pytest.fixture
+85 | def sample_list_request() -> Dict[str, Any]:
+   |                              ^^^^
+86 |     """Provide sample list nodes request data."""
+87 |     return {
+   |
+help: Replace with `dict`
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_complete_node.py:3:1
+  |
+1 |   """Contract tests for the workflowy_complete_node MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_complete_node.py:3:8
+  |
+1 | """Contract tests for the workflowy_complete_node MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_complete_node.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_complete_node.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_complete_node.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_complete_node.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_complete_node.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_complete_node.py:15:53
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_complete_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                     ^^^^^^^^^^^^^^^
+16 |         """Test that complete_node accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_create_node.py:3:1
+  |
+1 |   """Contract tests for the workflowy_create_node MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_create_node.py:3:8
+  |
+1 | """Contract tests for the workflowy_create_node MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_create_node.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_create_node.py:15:51
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_create_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                   ^^^^^^^^^^^^^^^
+16 |         """Test that create_node accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+ARG002 Unused method argument: `sample_create_request`
+  --> tests/contract/test_create_node.py:40:15
+   |
+38 |     @pytest.mark.asyncio
+39 |     async def test_create_node_with_minimal_input(
+40 |         self, sample_create_request: Dict[str, Any]
+   |               ^^^^^^^^^^^^^^^^^^^^^
+41 |     ) -> None:
+42 |         """Test creating a node with only required fields."""
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/contract/test_create_node.py:40:38
+   |
+38 |     @pytest.mark.asyncio
+39 |     async def test_create_node_with_minimal_input(
+40 |         self, sample_create_request: Dict[str, Any]
+   |                                      ^^^^
+41 |     ) -> None:
+42 |         """Test creating a node with only required fields."""
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/contract/test_create_node.py:53:77
+   |
+52 |     @pytest.mark.asyncio
+53 |     async def test_create_node_with_full_input(self, sample_create_request: Dict[str, Any]) -> None:
+   |                                                                             ^^^^
+54 |         """Test creating a node with all optional fields."""
+55 |         from ..tool_adapters import test_create_node
+   |
+help: Replace with `dict`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/contract/test_create_node.py:92:9
+   |
+90 |       async def test_create_node_handles_api_errors(self) -> None:
+91 |           """Test that API errors are handled properly."""
+92 | /         from workflowy_mcp.server import create_node as create_node_tool
+93 | |         from workflowy_mcp.models import NetworkError
+   | |_____________________________________________________^
+94 |
+95 |           # Get the actual function
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_delete_node.py:3:1
+  |
+1 |   """Contract tests for the workflowy_delete_node MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_delete_node.py:3:8
+  |
+1 | """Contract tests for the workflowy_delete_node MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_delete_node.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_delete_node.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_delete_node.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_delete_node.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_delete_node.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_delete_node.py:15:51
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_delete_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                   ^^^^^^^^^^^^^^^
+16 |         """Test that delete_node accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_get_node.py:3:1
+  |
+1 |   """Contract tests for the workflowy_get_node MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_get_node.py:3:8
+  |
+1 | """Contract tests for the workflowy_get_node MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_get_node.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_get_node.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_get_node.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_get_node.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_get_node.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_get_node.py:15:48
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_get_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                ^^^^^^^^^^^^^^^
+16 |         """Test that get_node accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_list_nodes.py:3:1
+  |
+1 |   """Contract tests for the workflowy_list_nodes MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_list_nodes.py:3:8
+  |
+1 | """Contract tests for the workflowy_list_nodes MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_list_nodes.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_list_nodes.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_list_nodes.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_list_nodes.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_list_nodes.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_list_nodes.py:15:50
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_list_nodes_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                  ^^^^^^^^^^^^^^^
+16 |         """Test that list_nodes accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_search_nodes.py:3:1
+  |
+1 |   """Contract tests for the workflowy_search_nodes MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_search_nodes.py:3:8
+  |
+1 | """Contract tests for the workflowy_search_nodes MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_search_nodes.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_search_nodes.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_search_nodes.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_search_nodes.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_search_nodes.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_search_nodes.py:15:52
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_search_nodes_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                    ^^^^^^^^^^^^^^^
+16 |         """Test that search_nodes accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_uncomplete_node.py:3:1
+  |
+1 |   """Contract tests for the workflowy_uncomplete_node MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_uncomplete_node.py:3:8
+  |
+1 | """Contract tests for the workflowy_uncomplete_node MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_uncomplete_node.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_uncomplete_node.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_uncomplete_node.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_uncomplete_node.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_uncomplete_node.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_uncomplete_node.py:15:55
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_uncomplete_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                       ^^^^^^^^^^^^^^^
+16 |         """Test that uncomplete_node accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/contract/test_update_node.py:3:1
+  |
+1 |   """Contract tests for the workflowy_update_node MCP tool."""
+2 |
+3 | / import json
+4 | | from typing import Any, Dict
+5 | | from unittest.mock import patch, AsyncMock
+6 | |
+7 | | import pytest
+8 | | from fastmcp import FastMCP
+  | |___________________________^
+  |
+help: Organize imports
+
+F401 [*] `json` imported but unused
+ --> tests/contract/test_update_node.py:3:8
+  |
+1 | """Contract tests for the workflowy_update_node MCP tool."""
+2 |
+3 | import json
+  |        ^^^^
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import: `json`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/contract/test_update_node.py:4:1
+  |
+3 | import json
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/contract/test_update_node.py:4:20
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/contract/test_update_node.py:4:25
+  |
+3 | import json
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/contract/test_update_node.py:5:27
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/contract/test_update_node.py:5:34
+  |
+3 | import json
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+6 |
+7 | import pytest
+  |
+help: Remove unused import
+
+ARG002 Unused method argument: `mock_mcp_server`
+  --> tests/contract/test_update_node.py:15:51
+   |
+14 |     @pytest.mark.asyncio
+15 |     async def test_update_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+   |                                                   ^^^^^^^^^^^^^^^
+16 |         """Test that update_node accepts the correct input schema."""
+17 |         from workflowy_mcp.server import mcp
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/integration/test_auth_errors.py:3:1
+  |
+1 |   """Integration tests for authentication and error handling."""
+2 |
+3 | / import os
+4 | | import pytest
+5 | | from typing import Any, Dict
+6 | | from unittest.mock import patch, AsyncMock
+  | |__________________________________________^
+  |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/integration/test_auth_errors.py:5:1
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+6 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/integration/test_auth_errors.py:5:20
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict
+  |                    ^^^
+6 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/integration/test_auth_errors.py:5:25
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict
+  |                         ^^^^
+6 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_auth_errors.py:22:9
+   |
+20 |       async def test_invalid_api_key(self) -> None:
+21 |           """Test that invalid API key returns proper error."""
+22 | /         from workflowy_mcp.server import list_nodes
+23 | |         from workflowy_mcp.client.api_client import WorkFlowyClient
+   | |___________________________________________________________________^
+24 |
+25 |           with patch.dict(os.environ, {"WORKFLOWY_API_KEY": "invalid-key"}):
+   |
+help: Organize imports
+
+F401 [*] `workflowy_mcp.client.api_client.WorkFlowyClient` imported but unused
+  --> tests/integration/test_auth_errors.py:23:53
+   |
+21 |         """Test that invalid API key returns proper error."""
+22 |         from workflowy_mcp.server import list_nodes
+23 |         from workflowy_mcp.client.api_client import WorkFlowyClient
+   |                                                     ^^^^^^^^^^^^^^^
+24 |
+25 |         with patch.dict(os.environ, {"WORKFLOWY_API_KEY": "invalid-key"}):
+   |
+help: Remove unused import: `workflowy_mcp.client.api_client.WorkFlowyClient`
+
+SIM117 Use a single `with` statement with multiple contexts instead of nested `with` statements
+  --> tests/integration/test_auth_errors.py:25:9
+   |
+23 |           from workflowy_mcp.client.api_client import WorkFlowyClient
+24 |
+25 | /         with patch.dict(os.environ, {"WORKFLOWY_API_KEY": "invalid-key"}):
+26 | |             # Mock API to return 401
+27 | |             with patch("workflowy_mcp.client.api_client.httpx.AsyncClient") as mock_client:
+   | |___________________________________________________________________________________________^
+28 |                   mock_response = AsyncMock()
+29 |                   mock_response.status_code = 401
+   |
+help: Combine `with` statements
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_auth_errors.py:42:9
+   |
+40 |       async def test_rate_limit_handling(self) -> None:
+41 |           """Test that rate limiting is handled with retry logic."""
+42 | /         from workflowy_mcp.server import list_nodes
+43 | |         from workflowy_mcp.client.retry import RetryHandler
+   | |___________________________________________________________^
+44 |
+45 |           call_count = 0
+   |
+help: Organize imports
+
+F401 [*] `workflowy_mcp.client.retry.RetryHandler` imported but unused
+  --> tests/integration/test_auth_errors.py:43:48
+   |
+41 |         """Test that rate limiting is handled with retry logic."""
+42 |         from workflowy_mcp.server import list_nodes
+43 |         from workflowy_mcp.client.retry import RetryHandler
+   |                                                ^^^^^^^^^^^^
+44 |
+45 |         call_count = 0
+   |
+help: Remove unused import: `workflowy_mcp.client.retry.RetryHandler`
+
+ARG001 Unused function argument: `args`
+  --> tests/integration/test_auth_errors.py:47:34
+   |
+45 |         call_count = 0
+46 |
+47 |         async def mock_api_call(*args, **kwargs):
+   |                                  ^^^^
+48 |             nonlocal call_count
+49 |             call_count += 1
+   |
+
+ARG001 Unused function argument: `kwargs`
+  --> tests/integration/test_auth_errors.py:47:42
+   |
+45 |         call_count = 0
+46 |
+47 |         async def mock_api_call(*args, **kwargs):
+   |                                          ^^^^^^
+48 |             nonlocal call_count
+49 |             call_count += 1
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_auth_errors.py:66:9
+   |
+64 |       async def test_network_error_handling(self) -> None:
+65 |           """Test handling of network errors."""
+66 | /         from workflowy_mcp.server import get_node
+67 | |         import httpx
+   | |____________________^
+68 |
+69 |           with patch("workflowy_mcp.client.api_client.httpx.AsyncClient.get") as mock_get:
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_auth_errors.py:83:9
+   |
+81 |       async def test_timeout_handling(self) -> None:
+82 |           """Test handling of request timeouts."""
+83 | /         from workflowy_mcp.server import create_node
+84 | |         import httpx
+   | |____________________^
+85 |
+86 |           with patch("workflowy_mcp.client.api_client.httpx.AsyncClient.post") as mock_post:
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/integration/test_node_lifecycle.py:3:1
+  |
+1 |   """Integration tests for WorkFlowy node lifecycle operations."""
+2 |
+3 | / import os
+4 | | import pytest
+5 | | from typing import Any, Dict, Optional
+6 | | from unittest.mock import AsyncMock, patch
+  | |__________________________________________^
+  |
+help: Organize imports
+
+F401 [*] `os` imported but unused
+ --> tests/integration/test_node_lifecycle.py:3:8
+  |
+1 | """Integration tests for WorkFlowy node lifecycle operations."""
+2 |
+3 | import os
+  |        ^^
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+  |
+help: Remove unused import: `os`
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/integration/test_node_lifecycle.py:5:1
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+6 | from unittest.mock import AsyncMock, patch
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/integration/test_node_lifecycle.py:5:20
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+  |                    ^^^
+6 | from unittest.mock import AsyncMock, patch
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/integration/test_node_lifecycle.py:5:25
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+  |                         ^^^^
+6 | from unittest.mock import AsyncMock, patch
+  |
+help: Remove unused import
+
+F401 [*] `typing.Optional` imported but unused
+ --> tests/integration/test_node_lifecycle.py:5:31
+  |
+3 | import os
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+  |                               ^^^^^^^^
+6 | from unittest.mock import AsyncMock, patch
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/integration/test_node_lifecycle.py:6:27
+  |
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+6 | from unittest.mock import AsyncMock, patch
+  |                           ^^^^^^^^^
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/integration/test_node_lifecycle.py:6:38
+  |
+4 | import pytest
+5 | from typing import Any, Dict, Optional
+6 | from unittest.mock import AsyncMock, patch
+  |                                      ^^^^^
+  |
+help: Remove unused import
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_node_lifecycle.py:15:9
+   |
+13 |       async def test_full_node_lifecycle(self) -> None:
+14 |           """Test creating, updating, completing, and deleting a node."""
+15 | /         from workflowy_mcp.server import create_node
+16 | |         from workflowy_mcp.server import update_node
+17 | |         from workflowy_mcp.server import get_node
+18 | |         from workflowy_mcp.server import complete_node
+19 | |         from workflowy_mcp.server import delete_node
+   | |____________________________________________________^
+20 |
+21 |           # Create a node
+   |
+help: Organize imports
+
+B017 Do not assert blind exception: `Exception`
+  --> tests/integration/test_node_lifecycle.py:46:14
+   |
+45 |         # Verify deletion
+46 |         with pytest.raises(Exception):
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^
+47 |             await get_node.fn(node_id=node_id)
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_node_lifecycle.py:52:9
+   |
+50 |       async def test_parent_child_relationship(self) -> None:
+51 |           """Test creating nodes with parent-child relationships."""
+52 | /         from workflowy_mcp.server import create_node
+53 | |         from workflowy_mcp.server import list_nodes
+54 | |         from workflowy_mcp.server import delete_node
+   | |____________________________________________________^
+55 |
+56 |           # Create parent node
+   |
+help: Organize imports
+
+F841 Local variable `child1` is assigned to but never used
+  --> tests/integration/test_node_lifecycle.py:61:9
+   |
+60 |         # Create child nodes
+61 |         child1 = await create_node.fn(name="Child 1", parent_id=parent_id)
+   |         ^^^^^^
+62 |         child2 = await create_node.fn(name="Child 2", parent_id=parent_id)
+   |
+help: Remove assignment to unused variable `child1`
+
+F841 Local variable `child2` is assigned to but never used
+  --> tests/integration/test_node_lifecycle.py:62:9
+   |
+60 |         # Create child nodes
+61 |         child1 = await create_node.fn(name="Child 1", parent_id=parent_id)
+62 |         child2 = await create_node.fn(name="Child 2", parent_id=parent_id)
+   |         ^^^^^^
+63 |
+64 |         # List children of parent
+   |
+help: Remove assignment to unused variable `child2`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_node_lifecycle.py:74:9
+   |
+72 |       async def test_bulk_operations(self) -> None:
+73 |           """Test performing bulk operations on multiple nodes."""
+74 | /         from workflowy_mcp.server import create_node
+75 | |         from workflowy_mcp.server import list_nodes
+76 | |         from workflowy_mcp.server import complete_node
+77 | |         from workflowy_mcp.server import delete_node
+   | |____________________________________________________^
+78 |
+79 |           created_ids = []
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/integration/test_node_lifecycle.py:105:9
+    |
+103 |       async def test_node_state_transitions(self) -> None:
+104 |           """Test node state transitions between completed and uncompleted."""
+105 | /         from workflowy_mcp.server import create_node
+106 | |         from workflowy_mcp.server import complete_node
+107 | |         from workflowy_mcp.server import uncomplete_node
+108 | |         from workflowy_mcp.server import get_node
+109 | |         from workflowy_mcp.server import delete_node
+    | |____________________________________________________^
+110 |
+111 |           # Create a node
+    |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/integration/test_node_lifecycle.py:135:9
+    |
+133 |       async def test_node_with_metadata(self) -> None:
+134 |           """Test creating and updating nodes with all metadata fields."""
+135 | /         from workflowy_mcp.server import create_node
+136 | |         from workflowy_mcp.server import update_node
+137 | |         from workflowy_mcp.server import get_node
+138 | |         from workflowy_mcp.server import delete_node
+    | |____________________________________________________^
+139 |
+140 |           # Create node with full metadata
+    |
+help: Organize imports
+
+F841 Local variable `updated` is assigned to but never used
+   --> tests/integration/test_node_lifecycle.py:147:9
+    |
+146 |         # Update with different metadata
+147 |         updated = await update_node.fn(
+    |         ^^^^^^^
+148 |             node_id=node_id, name="Updated Metadata Node", note="Updated note content", priority=3
+149 |         )
+    |
+help: Remove assignment to unused variable `updated`
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/integration/test_search_filter.py:3:1
+  |
+1 |   """Integration tests for search and filtering operations."""
+2 |
+3 | / import pytest
+4 | | from typing import Any, Dict, List
+5 | | from unittest.mock import patch, AsyncMock
+  | |__________________________________________^
+  |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/integration/test_search_filter.py:4:1
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> tests/integration/test_search_filter.py:4:1
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/integration/test_search_filter.py:4:20
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+  |                    ^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/integration/test_search_filter.py:4:25
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+  |                         ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `typing.List` imported but unused
+ --> tests/integration/test_search_filter.py:4:31
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+  |                               ^^^^
+5 | from unittest.mock import patch, AsyncMock
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.patch` imported but unused
+ --> tests/integration/test_search_filter.py:5:27
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+5 | from unittest.mock import patch, AsyncMock
+  |                           ^^^^^
+  |
+help: Remove unused import
+
+F401 [*] `unittest.mock.AsyncMock` imported but unused
+ --> tests/integration/test_search_filter.py:5:34
+  |
+3 | import pytest
+4 | from typing import Any, Dict, List
+5 | from unittest.mock import patch, AsyncMock
+  |                                  ^^^^^^^^^
+  |
+help: Remove unused import
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_search_filter.py:14:9
+   |
+12 |       async def test_search_across_hierarchy(self) -> None:
+13 |           """Test searching nodes across the entire hierarchy."""
+14 | /         from workflowy_mcp.server import create_node
+15 | |         from workflowy_mcp.server import search_nodes
+16 | |         from workflowy_mcp.server import delete_node
+   | |____________________________________________________^
+17 |
+18 |           created_ids = []
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_search_filter.py:50:9
+   |
+48 |       async def test_filter_by_completion_status(self) -> None:
+49 |           """Test filtering nodes by completion status."""
+50 | /         from workflowy_mcp.server import create_node
+51 | |         from workflowy_mcp.server import complete_node
+52 | |         from workflowy_mcp.server import list_nodes
+53 | |         from workflowy_mcp.server import delete_node
+   | |____________________________________________________^
+54 |
+55 |           created_ids = []
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/integration/test_search_filter.py:95:9
+   |
+93 |       async def test_search_with_special_characters(self) -> None:
+94 |           """Test searching with special characters and escaping."""
+95 | /         from workflowy_mcp.server import create_node
+96 | |         from workflowy_mcp.server import search_nodes
+97 | |         from workflowy_mcp.server import delete_node
+   | |____________________________________________________^
+98 |
+99 |           # Create nodes with special characters
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/integration/test_search_filter.py:124:9
+    |
+122 |       async def test_list_with_pagination(self) -> None:
+123 |           """Test listing nodes with limit and offset pagination."""
+124 | /         from workflowy_mcp.server import create_node
+125 | |         from workflowy_mcp.server import list_nodes
+126 | |         from workflowy_mcp.server import delete_node
+    | |____________________________________________________^
+127 |
+128 |           created_ids = []
+    |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/integration/test_search_filter.py:155:9
+    |
+153 |       async def test_list_with_depth_limit(self) -> None:
+154 |           """Test listing nodes with max depth limitation."""
+155 | /         from workflowy_mcp.server import create_node
+156 | |         from workflowy_mcp.server import list_nodes
+157 | |         from workflowy_mcp.server import delete_node
+    | |____________________________________________________^
+158 |
+159 |           # Create nested hierarchy
+    |
+help: Organize imports
+
+F841 Local variable `level3` is assigned to but never used
+   --> tests/integration/test_search_filter.py:167:9
+    |
+165 |         level2 = await create_node.fn(name="Level 2", parent_id=level1["node"]["id"])
+166 |
+167 |         level3 = await create_node.fn(name="Level 3", parent_id=level2["node"]["id"])
+    |         ^^^^^^
+168 |
+169 |         # List with depth=1 (only direct children)
+    |
+help: Remove assignment to unused variable `level3`
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/integration/test_search_filter.py:191:9
+    |
+189 |       async def test_search_case_sensitivity(self) -> None:
+190 |           """Test that search is case-insensitive."""
+191 | /         from workflowy_mcp.server import create_node
+192 | |         from workflowy_mcp.server import search_nodes
+193 | |         from workflowy_mcp.server import delete_node
+    | |____________________________________________________^
+194 |
+195 |           # Create nodes with mixed case
+    |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/performance/test_response_times.py:3:1
+   |
+ 1 |   """Performance tests for API operations."""
+ 2 |
+ 3 | / import pytest
+ 4 | | import asyncio
+ 5 | | import time
+ 6 | | from typing import List, Dict, Any
+ 7 | | from unittest.mock import AsyncMock, patch
+ 8 | | import statistics
+ 9 | |
+10 | | from workflowy_mcp.server import (
+11 | |     create_node,
+12 | |     get_node,
+13 | |     update_node,
+14 | |     list_nodes,
+15 | |     search_nodes,
+16 | |     delete_node,
+17 | | )
+   | |_^
+   |
+help: Organize imports
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> tests/performance/test_response_times.py:6:1
+  |
+4 | import asyncio
+5 | import time
+6 | from typing import List, Dict, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | from unittest.mock import AsyncMock, patch
+8 | import statistics
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/performance/test_response_times.py:6:1
+  |
+4 | import asyncio
+5 | import time
+6 | from typing import List, Dict, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | from unittest.mock import AsyncMock, patch
+8 | import statistics
+  |
+
+F401 [*] `typing.List` imported but unused
+ --> tests/performance/test_response_times.py:6:20
+  |
+4 | import asyncio
+5 | import time
+6 | from typing import List, Dict, Any
+  |                    ^^^^
+7 | from unittest.mock import AsyncMock, patch
+8 | import statistics
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/performance/test_response_times.py:6:26
+  |
+4 | import asyncio
+5 | import time
+6 | from typing import List, Dict, Any
+  |                          ^^^^
+7 | from unittest.mock import AsyncMock, patch
+8 | import statistics
+  |
+help: Remove unused import
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/performance/test_response_times.py:6:32
+  |
+4 | import asyncio
+5 | import time
+6 | from typing import List, Dict, Any
+  |                                ^^^
+7 | from unittest.mock import AsyncMock, patch
+8 | import statistics
+  |
+help: Remove unused import
+
+F401 [*] `workflowy_mcp.server.update_node` imported but unused
+  --> tests/performance/test_response_times.py:13:5
+   |
+11 |     create_node,
+12 |     get_node,
+13 |     update_node,
+   |     ^^^^^^^^^^^
+14 |     list_nodes,
+15 |     search_nodes,
+   |
+help: Remove unused import
+
+F401 [*] `workflowy_mcp.server.delete_node` imported but unused
+  --> tests/performance/test_response_times.py:16:5
+   |
+14 |     list_nodes,
+15 |     search_nodes,
+16 |     delete_node,
+   |     ^^^^^^^^^^^
+17 | )
+   |
+help: Remove unused import
+
+ARG001 Unused function argument: `args`
+   --> tests/performance/test_response_times.py:223:38
+    |
+221 |             call_count = 0
+222 |
+223 |             async def mock_get_node(*args, **kwargs):
+    |                                      ^^^^
+224 |                 nonlocal call_count
+225 |                 call_count += 1
+    |
+
+ARG001 Unused function argument: `kwargs`
+   --> tests/performance/test_response_times.py:223:46
+    |
+221 |             call_count = 0
+222 |
+223 |             async def mock_get_node(*args, **kwargs):
+    |                                              ^^^^^^
+224 |                 nonlocal call_count
+225 |                 call_count += 1
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/tool_adapters.py:3:1
+   |
+ 1 |   """Adapters to make MCP tools testable."""
+ 2 |
+ 3 | / import time
+ 4 | | from typing import Any, Dict
+ 5 | | from unittest.mock import patch, AsyncMock
+ 6 | | import httpx
+ 7 | |
+ 8 | | from workflowy_mcp.server import (
+ 9 | |     create_node as create_node_tool,
+10 | |     update_node as update_node_tool,
+11 | |     get_node as get_node_tool,
+12 | |     list_nodes as list_nodes_tool,
+13 | |     delete_node as delete_node_tool,
+14 | |     complete_node as complete_node_tool,
+15 | |     uncomplete_node as uncomplete_node_tool,
+16 | |     search_nodes as search_nodes_tool,
+17 | | )
+   | |_^
+18 |
+19 |   # Get the actual functions from the tools
+   |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/tool_adapters.py:4:1
+  |
+3 | import time
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | from unittest.mock import patch, AsyncMock
+6 | import httpx
+  |
+
+F401 [*] `httpx` imported but unused
+ --> tests/tool_adapters.py:6:8
+  |
+4 | from typing import Any, Dict
+5 | from unittest.mock import patch, AsyncMock
+6 | import httpx
+  |        ^^^^^
+7 |
+8 | from workflowy_mcp.server import (
+  |
+help: Remove unused import: `httpx`
+
+E402 Module level import not at top of file
+  --> tests/tool_adapters.py:28:1
+   |
+26 | uncomplete_node = uncomplete_node_tool.fn
+27 | search_nodes = search_nodes_tool.fn
+28 | from workflowy_mcp.models import WorkFlowyNode
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/tool_adapters.py:32:34
+   |
+31 | # Create wrapper functions that can be tested
+32 | async def test_create_node(data: Dict[str, Any]) -> Dict[str, Any]:
+   |                                  ^^^^
+33 |     """Test wrapper for create_node tool."""
+34 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/tool_adapters.py:32:53
+   |
+31 | # Create wrapper functions that can be tested
+32 | async def test_create_node(data: Dict[str, Any]) -> Dict[str, Any]:
+   |                                                     ^^^^
+33 |     """Test wrapper for create_node tool."""
+34 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/tool_adapters.py:66:34
+   |
+66 | async def test_update_node(data: Dict[str, Any]) -> Dict[str, Any]:
+   |                                  ^^^^
+67 |     """Test wrapper for update_node tool."""
+68 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/tool_adapters.py:66:53
+   |
+66 | async def test_update_node(data: Dict[str, Any]) -> Dict[str, Any]:
+   |                                                     ^^^^
+67 |     """Test wrapper for update_node tool."""
+68 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/tool_adapters.py:95:31
+   |
+95 | async def test_get_node(data: Dict[str, Any]) -> Dict[str, Any]:
+   |                               ^^^^
+96 |     """Test wrapper for get_node tool."""
+97 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> tests/tool_adapters.py:95:50
+   |
+95 | async def test_get_node(data: Dict[str, Any]) -> Dict[str, Any]:
+   |                                                  ^^^^
+96 |     """Test wrapper for get_node tool."""
+97 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+   |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:119:33
+    |
+119 | async def test_list_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                 ^^^^
+120 |     """Test wrapper for list_nodes tool."""
+121 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:119:52
+    |
+119 | async def test_list_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                    ^^^^
+120 |     """Test wrapper for list_nodes tool."""
+121 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:150:34
+    |
+150 | async def test_delete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                  ^^^^
+151 |     """Test wrapper for delete_node tool."""
+152 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:150:53
+    |
+150 | async def test_delete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                     ^^^^
+151 |     """Test wrapper for delete_node tool."""
+152 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:165:36
+    |
+165 | async def test_complete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                    ^^^^
+166 |     """Test wrapper for complete_node tool."""
+167 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:165:55
+    |
+165 | async def test_complete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                       ^^^^
+166 |     """Test wrapper for complete_node tool."""
+167 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:187:38
+    |
+187 | async def test_uncomplete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                      ^^^^
+188 |     """Test wrapper for uncomplete_node tool."""
+189 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:187:57
+    |
+187 | async def test_uncomplete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                         ^^^^
+188 |     """Test wrapper for uncomplete_node tool."""
+189 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:209:35
+    |
+209 | async def test_search_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                   ^^^^
+210 |     """Test wrapper for search_nodes tool."""
+211 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> tests/tool_adapters.py:209:54
+    |
+209 | async def test_search_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
+    |                                                      ^^^^
+210 |     """Test wrapper for search_nodes tool."""
+211 |     with patch("workflowy_mcp.server.get_client") as mock_get_client:
+    |
+help: Replace with `dict`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/unit/test_models.py:3:1
+   |
+ 1 |   """Unit tests for data models validation."""
+ 2 |
+ 3 | / import pytest
+ 4 | | from typing import Any, Dict
+ 5 | | import time
+ 6 | |
+ 7 | | from workflowy_mcp.models.node import WorkFlowyNode
+ 8 | | from workflowy_mcp.models.requests import (
+ 9 | |     NodeCreateRequest,
+10 | |     NodeUpdateRequest,
+11 | |     NodeListRequest,
+12 | |     SearchRequest,
+13 | | )
+14 | | from workflowy_mcp.models.config import ServerConfig
+15 | | from workflowy_mcp.models.errors import (
+16 | |     WorkFlowyError,
+17 | |     ValidationError,
+18 | |     RateLimitError,
+19 | |     AuthenticationError,
+20 | |     NodeNotFoundError,
+21 | |     NetworkError,
+22 | |     TimeoutError,
+23 | |     ErrorResponse,
+24 | | )
+   | |_^
+   |
+help: Organize imports
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> tests/unit/test_models.py:4:1
+  |
+3 | import pytest
+4 | from typing import Any, Dict
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | import time
+  |
+
+F401 [*] `typing.Any` imported but unused
+ --> tests/unit/test_models.py:4:20
+  |
+3 | import pytest
+4 | from typing import Any, Dict
+  |                    ^^^
+5 | import time
+  |
+help: Remove unused import
+
+F401 [*] `typing.Dict` imported but unused
+ --> tests/unit/test_models.py:4:25
+  |
+3 | import pytest
+4 | from typing import Any, Dict
+  |                         ^^^^
+5 | import time
+  |
+help: Remove unused import
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/unit/test_models.py:219:9
+    |
+217 |       def test_config_validation(self):
+218 |           """Test configuration validation when converting to APIConfiguration."""
+219 | /         import os
+220 | |         from pydantic import ValidationError as PydanticValidationError
+    | |_______________________________________________________________________^
+221 |
+222 |           # Save and clear any existing env vars
+    |
+help: Organize imports
+
+F401 [*] `pydantic.ValidationError` imported but unused
+   --> tests/unit/test_models.py:220:49
+    |
+218 |         """Test configuration validation when converting to APIConfiguration."""
+219 |         import os
+220 |         from pydantic import ValidationError as PydanticValidationError
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^
+221 |
+222 |         # Save and clear any existing env vars
+    |
+help: Remove unused import: `pydantic.ValidationError`
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/unit/test_models.py:236:13
+    |
+234 |           try:
+235 |               # Test APIConfiguration validation directly
+236 | /             from workflowy_mcp.models.config import APIConfiguration
+237 | |             from pydantic import SecretStr
+    | |__________________________________________^
+238 |
+239 |               # Invalid timeout
+    |
+help: Organize imports
+
+Found 298 errors.
+[*] 232 fixable with the `--fix` option (5 hidden fixes can be enabled with the `--unsafe-fixes` option).
+Error: Process completed with exit code 1.

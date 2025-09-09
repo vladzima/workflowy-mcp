@@ -1,8 +1,6 @@
 """Integration tests for search and filtering operations."""
 
 import pytest
-from typing import Any, Dict, List
-from unittest.mock import patch, AsyncMock
 
 
 class TestSearchAndFilter:
@@ -11,9 +9,7 @@ class TestSearchAndFilter:
     @pytest.mark.asyncio
     async def test_search_across_hierarchy(self) -> None:
         """Test searching nodes across the entire hierarchy."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import search_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, search_nodes
 
         created_ids = []
 
@@ -47,10 +43,7 @@ class TestSearchAndFilter:
     @pytest.mark.asyncio
     async def test_filter_by_completion_status(self) -> None:
         """Test filtering nodes by completion status."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import complete_node
-        from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import complete_node, create_node, delete_node, list_nodes
 
         created_ids = []
 
@@ -92,9 +85,7 @@ class TestSearchAndFilter:
     @pytest.mark.asyncio
     async def test_search_with_special_characters(self) -> None:
         """Test searching with special characters and escaping."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import search_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, search_nodes
 
         # Create nodes with special characters
         node1 = await create_node.fn(name="Code: function()", note="Implementation of foo()")
@@ -121,9 +112,7 @@ class TestSearchAndFilter:
     @pytest.mark.asyncio
     async def test_list_with_pagination(self) -> None:
         """Test listing nodes with limit and offset pagination."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, list_nodes
 
         created_ids = []
 
@@ -152,9 +141,7 @@ class TestSearchAndFilter:
     @pytest.mark.asyncio
     async def test_list_with_depth_limit(self) -> None:
         """Test listing nodes with max depth limitation."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, list_nodes
 
         # Create nested hierarchy
         root = await create_node.fn(name="Root")
@@ -164,7 +151,7 @@ class TestSearchAndFilter:
 
         level2 = await create_node.fn(name="Level 2", parent_id=level1["node"]["id"])
 
-        level3 = await create_node.fn(name="Level 3", parent_id=level2["node"]["id"])
+        await create_node.fn(name="Level 3", parent_id=level2["node"]["id"])
 
         # List with depth=1 (only direct children)
         shallow = await list_nodes.fn(parent_id=root_id, max_depth=1)
@@ -188,9 +175,7 @@ class TestSearchAndFilter:
     @pytest.mark.asyncio
     async def test_search_case_sensitivity(self) -> None:
         """Test that search is case-insensitive."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import search_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, search_nodes
 
         # Create nodes with mixed case
         node1 = await create_node.fn(name="UPPERCASE PROJECT")

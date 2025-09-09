@@ -1,9 +1,5 @@
 """Contract tests for the workflowy_uncomplete_node MCP tool."""
 
-import json
-from typing import Any, Dict
-from unittest.mock import patch, AsyncMock
-
 import pytest
 from fastmcp import FastMCP
 
@@ -12,7 +8,7 @@ class TestUncompleteNodeContract:
     """Contract tests for node uncompletion tool."""
 
     @pytest.mark.asyncio
-    async def test_uncomplete_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+    async def test_uncomplete_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
         """Test that uncomplete_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 

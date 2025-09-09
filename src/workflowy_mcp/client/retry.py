@@ -1,12 +1,13 @@
 """Retry logic with exponential backoff for API requests."""
 
 import asyncio
-import random
-from typing import TypeVar, Callable, Optional, Any
-from functools import wraps
 import logging
+import random
+from collections.abc import Callable
+from functools import wraps
+from typing import Any, TypeVar
 
-from ..models.errors import RateLimitError, NetworkError, TimeoutError
+from ..models.errors import NetworkError, RateLimitError, TimeoutError
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class RetryHandler:
                     )
                     await asyncio.sleep(delay)
                 else:
-                    logger.error(f"Max retries reached for rate limit error")
+                    logger.error("Max retries reached for rate limit error")
                     raise
 
             except (NetworkError, TimeoutError) as e:

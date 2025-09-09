@@ -1,7 +1,7 @@
 """Main entry point for WorkFlowy MCP Server."""
 
 import asyncio
-import sys
+
 from workflowy_mcp.server import mcp
 
 

@@ -1,21 +1,21 @@
 """WorkFlowy API client implementation."""
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 import httpx
-from pydantic import SecretStr
 
 from ..models import (
-    WorkFlowyNode,
-    NodeCreateRequest,
-    NodeUpdateRequest,
-    NodeListRequest,
     APIConfiguration,
     AuthenticationError,
-    NodeNotFoundError,
     NetworkError,
-    TimeoutError,
+    NodeCreateRequest,
+    NodeListRequest,
+    NodeNotFoundError,
+    NodeUpdateRequest,
     RateLimitError,
+    TimeoutError,
+    WorkFlowyNode,
 )
 
 
@@ -26,7 +26,7 @@ class WorkFlowyClient:
         """Initialize the WorkFlowy API client."""
         self.config = config
         self.base_url = config.base_url
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     @property
     def client(self) -> httpx.AsyncClient:
@@ -59,7 +59,7 @@ class WorkFlowyClient:
         """Async context manager exit."""
         await self.close()
 
-    async def _handle_response(self, response: httpx.Response) -> Dict[str, Any]:
+    async def _handle_response(self, response: httpx.Response) -> dict[str, Any]:
         """Handle API response and errors."""
         if response.status_code == 401:
             raise AuthenticationError("Invalid API key or unauthorized access")
@@ -86,8 +86,8 @@ class WorkFlowyClient:
 
         try:
             return response.json()
-        except json.JSONDecodeError:
-            raise NetworkError("Invalid response format from API")
+        except json.JSONDecodeError as err:
+            raise NetworkError("Invalid response format from API") from err
 
     async def create_node(self, request: NodeCreateRequest) -> WorkFlowyNode:
         """Create a new node in WorkFlowy."""
@@ -95,10 +95,10 @@ class WorkFlowyClient:
             response = await self.client.post("/nodes", json=request.model_dump(exclude_none=True))
             data = await self._handle_response(response)
             return WorkFlowyNode(**data)
-        except httpx.TimeoutException:
-            raise TimeoutError("create_node")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("create_node") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
     async def update_node(self, node_id: str, request: NodeUpdateRequest) -> WorkFlowyNode:
         """Update an existing node."""
@@ -108,10 +108,10 @@ class WorkFlowyClient:
             )
             data = await self._handle_response(response)
             return WorkFlowyNode(**data)
-        except httpx.TimeoutException:
-            raise TimeoutError("update_node")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("update_node") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
     async def get_node(self, node_id: str) -> WorkFlowyNode:
         """Retrieve a specific node by ID."""
@@ -119,12 +119,12 @@ class WorkFlowyClient:
             response = await self.client.get(f"/nodes/{node_id}")
             data = await self._handle_response(response)
             return WorkFlowyNode(**data)
-        except httpx.TimeoutException:
-            raise TimeoutError("get_node")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("get_node") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
-    async def list_nodes(self, request: NodeListRequest) -> tuple[List[WorkFlowyNode], int]:
+    async def list_nodes(self, request: NodeListRequest) -> tuple[list[WorkFlowyNode], int]:
         """List nodes with optional filtering."""
         try:
             params = request.model_dump(exclude_none=True)
@@ -134,10 +134,10 @@ class WorkFlowyClient:
             nodes = [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
             total = data.get("total", len(nodes))
             return nodes, total
-        except httpx.TimeoutException:
-            raise TimeoutError("list_nodes")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("list_nodes") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
     async def delete_node(self, node_id: str) -> bool:
         """Delete a node and all its children."""
@@ -145,10 +145,10 @@ class WorkFlowyClient:
             response = await self.client.delete(f"/nodes/{node_id}")
             await self._handle_response(response)
             return True
-        except httpx.TimeoutException:
-            raise TimeoutError("delete_node")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("delete_node") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
     async def complete_node(self, node_id: str) -> WorkFlowyNode:
         """Mark a node as completed."""
@@ -156,10 +156,10 @@ class WorkFlowyClient:
             response = await self.client.post(f"/nodes/{node_id}/complete")
             data = await self._handle_response(response)
             return WorkFlowyNode(**data)
-        except httpx.TimeoutException:
-            raise TimeoutError("complete_node")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("complete_node") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
     async def uncomplete_node(self, node_id: str) -> WorkFlowyNode:
         """Mark a node as not completed."""
@@ -167,12 +167,12 @@ class WorkFlowyClient:
             response = await self.client.post(f"/nodes/{node_id}/uncomplete")
             data = await self._handle_response(response)
             return WorkFlowyNode(**data)
-        except httpx.TimeoutException:
-            raise TimeoutError("uncomplete_node")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("uncomplete_node") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e
 
-    async def search_nodes(self, query: str, include_completed: bool = True) -> List[WorkFlowyNode]:
+    async def search_nodes(self, query: str, include_completed: bool = True) -> list[WorkFlowyNode]:
         """Search for nodes by text content."""
         try:
             params = {"q": query, "include_completed": include_completed}
@@ -180,7 +180,7 @@ class WorkFlowyClient:
             data = await self._handle_response(response)
 
             return [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
-        except httpx.TimeoutException:
-            raise TimeoutError("search_nodes")
+        except httpx.TimeoutException as err:
+            raise TimeoutError("search_nodes") from err
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}")
+            raise NetworkError(f"Network error: {str(e)}") from e

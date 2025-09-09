@@ -1,16 +1,18 @@
 """Error handling middleware for WorkFlowy MCP Server."""
 
 import traceback
-from typing import Any, Callable, Dict
+from collections.abc import Callable
 from functools import wraps
+from typing import Any
+
 import httpx
 
 from workflowy_mcp.models.errors import (
-    WorkFlowyError,
     APIError,
-    ValidationError,
-    RateLimitError,
     AuthenticationError,
+    RateLimitError,
+    ValidationError,
+    WorkFlowyError,
 )
 
 
@@ -18,7 +20,7 @@ def error_handler(func: Callable) -> Callable:
     """Decorator to handle errors in MCP tool functions."""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs) -> Dict[str, Any]:
+    async def wrapper(*args, **kwargs) -> dict[str, Any]:
         try:
             return await func(*args, **kwargs)
         except ValidationError as e:
@@ -89,14 +91,14 @@ class ErrorMiddleware:
     def __init__(self):
         """Initialize error middleware."""
         self.error_count = 0
-        self.error_types: Dict[str, int] = {}
+        self.error_types: dict[str, int] = {}
 
     def track_error(self, error_type: str) -> None:
         """Track error occurrences for monitoring."""
         self.error_count += 1
         self.error_types[error_type] = self.error_types.get(error_type, 0) + 1
 
-    def get_error_stats(self) -> Dict[str, Any]:
+    def get_error_stats(self) -> dict[str, Any]:
         """Get error statistics."""
         return {"total_errors": self.error_count, "error_types": self.error_types.copy()}
 
@@ -105,7 +107,7 @@ class ErrorMiddleware:
         self.error_count = 0
         self.error_types.clear()
 
-    async def handle_error(self, error: Exception, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def handle_error(self, error: Exception, context: dict[str, Any]) -> dict[str, Any]:
         """
         Handle an error with context information.
 

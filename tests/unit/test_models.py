@@ -1,26 +1,26 @@
 """Unit tests for data models validation."""
 
-import pytest
-from typing import Any, Dict
 import time
 
+import pytest
+
+from workflowy_mcp.models.config import ServerConfig
+from workflowy_mcp.models.errors import (
+    AuthenticationError,
+    ErrorResponse,
+    NetworkError,
+    NodeNotFoundError,
+    RateLimitError,
+    TimeoutError,
+    ValidationError,
+    WorkFlowyError,
+)
 from workflowy_mcp.models.node import WorkFlowyNode
 from workflowy_mcp.models.requests import (
     NodeCreateRequest,
-    NodeUpdateRequest,
     NodeListRequest,
+    NodeUpdateRequest,
     SearchRequest,
-)
-from workflowy_mcp.models.config import ServerConfig
-from workflowy_mcp.models.errors import (
-    WorkFlowyError,
-    ValidationError,
-    RateLimitError,
-    AuthenticationError,
-    NodeNotFoundError,
-    NetworkError,
-    TimeoutError,
-    ErrorResponse,
 )
 
 
@@ -217,7 +217,6 @@ class TestConfigModel:
     def test_config_validation(self):
         """Test configuration validation when converting to APIConfiguration."""
         import os
-        from pydantic import ValidationError as PydanticValidationError
 
         # Save and clear any existing env vars
         saved_env = {}
@@ -233,8 +232,9 @@ class TestConfigModel:
 
         try:
             # Test APIConfiguration validation directly
-            from workflowy_mcp.models.config import APIConfiguration
             from pydantic import SecretStr
+
+            from workflowy_mcp.models.config import APIConfiguration
 
             # Invalid timeout
             with pytest.raises(ValueError):

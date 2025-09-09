@@ -1,9 +1,5 @@
 """Contract tests for the workflowy_list_nodes MCP tool."""
 
-import json
-from typing import Any, Dict
-from unittest.mock import patch, AsyncMock
-
 import pytest
 from fastmcp import FastMCP
 
@@ -12,7 +8,7 @@ class TestListNodesContract:
     """Contract tests for node listing tool."""
 
     @pytest.mark.asyncio
-    async def test_list_nodes_input_schema(self, mock_mcp_server: FastMCP) -> None:
+    async def test_list_nodes_input_schema(self, _mock_mcp_server: FastMCP) -> None:
         """Test that list_nodes accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 

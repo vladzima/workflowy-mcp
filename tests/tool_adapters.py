@@ -1,19 +1,33 @@
 """Adapters to make MCP tools testable."""
 
 import time
-from typing import Any, Dict
-from unittest.mock import patch, AsyncMock
-import httpx
+from typing import Any
+from unittest.mock import AsyncMock, patch
 
+from workflowy_mcp.models import WorkFlowyNode
+from workflowy_mcp.server import (
+    complete_node as complete_node_tool,
+)
 from workflowy_mcp.server import (
     create_node as create_node_tool,
-    update_node as update_node_tool,
-    get_node as get_node_tool,
-    list_nodes as list_nodes_tool,
+)
+from workflowy_mcp.server import (
     delete_node as delete_node_tool,
-    complete_node as complete_node_tool,
-    uncomplete_node as uncomplete_node_tool,
+)
+from workflowy_mcp.server import (
+    get_node as get_node_tool,
+)
+from workflowy_mcp.server import (
+    list_nodes as list_nodes_tool,
+)
+from workflowy_mcp.server import (
     search_nodes as search_nodes_tool,
+)
+from workflowy_mcp.server import (
+    uncomplete_node as uncomplete_node_tool,
+)
+from workflowy_mcp.server import (
+    update_node as update_node_tool,
 )
 
 # Get the actual functions from the tools
@@ -25,11 +39,10 @@ delete_node = delete_node_tool.fn
 complete_node = complete_node_tool.fn
 uncomplete_node = uncomplete_node_tool.fn
 search_nodes = search_nodes_tool.fn
-from workflowy_mcp.models import WorkFlowyNode
 
 
 # Create wrapper functions that can be tested
-async def test_create_node(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_create_node(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for create_node tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -63,7 +76,7 @@ async def test_create_node(data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "node": result.model_dump()}
 
 
-async def test_update_node(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_update_node(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for update_node tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -92,7 +105,7 @@ async def test_update_node(data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "node": result.model_dump()}
 
 
-async def test_get_node(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_get_node(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for get_node tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -116,7 +129,7 @@ async def test_get_node(data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "node": result.model_dump()}
 
 
-async def test_list_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_list_nodes(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for list_nodes tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -147,7 +160,7 @@ async def test_list_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
         return result
 
 
-async def test_delete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_delete_node(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for delete_node tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -162,7 +175,7 @@ async def test_delete_node(data: Dict[str, Any]) -> Dict[str, Any]:
         return result
 
 
-async def test_complete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_complete_node(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for complete_node tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -184,7 +197,7 @@ async def test_complete_node(data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "node": result.model_dump()}
 
 
-async def test_uncomplete_node(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_uncomplete_node(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for uncomplete_node tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()
@@ -206,7 +219,7 @@ async def test_uncomplete_node(data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "node": result.model_dump()}
 
 
-async def test_search_nodes(data: Dict[str, Any]) -> Dict[str, Any]:
+async def test_search_nodes(data: dict[str, Any]) -> dict[str, Any]:
     """Test wrapper for search_nodes tool."""
     with patch("workflowy_mcp.server.get_client") as mock_get_client:
         mock_client = AsyncMock()

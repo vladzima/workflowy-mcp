@@ -1,7 +1,6 @@
 """Configuration models for WorkFlowy MCP server."""
 
-from typing import Optional
-from pydantic import BaseModel, Field, field_validator, SecretStr
+from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings
 
 

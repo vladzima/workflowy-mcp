@@ -1,10 +1,9 @@
 """Configuration management for WorkFlowy MCP server."""
 
-import os
 import logging
 import logging.handlers
+import os
 from pathlib import Path
-from typing import Optional
 
 from .models.config import ServerConfig
 
@@ -20,7 +19,7 @@ if os.getenv("WORKFLOWY_DEV_MODE") or os.getenv("WORKFLOWY_LOAD_ENV"):
         pass
 
 
-def setup_logging(config: Optional[ServerConfig] = None) -> None:
+def setup_logging(config: ServerConfig | None = None) -> None:
     """Setup logging configuration.
 
     Args:

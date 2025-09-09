@@ -1,6 +1,5 @@
 """WorkFlowy node data model."""
 
-from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -8,14 +7,14 @@ class WorkFlowyNode(BaseModel):
     """Represents a single node in the WorkFlowy outline hierarchy."""
 
     id: str = Field(..., description="Unique identifier for the node")
-    nm: Optional[str] = Field(None, description="Name/text content of the node")
-    no: Optional[str] = Field(None, description="Note content attached to the node")
+    nm: str | None = Field(None, description="Name/text content of the node")
+    no: str | None = Field(None, description="Note content attached to the node")
     cp: bool = Field(False, description="Completion status (true if completed)")
-    ch: Optional[List["WorkFlowyNode"]] = Field(None, description="Child nodes")
+    ch: list["WorkFlowyNode"] | None = Field(None, description="Child nodes")
     created: int = Field(..., description="Creation timestamp (Unix timestamp)")
     modified: int = Field(..., description="Last modification timestamp")
-    priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (0-3)")
-    layout_mode: Optional[str] = Field(None, description="Display layout mode")
+    priority: int | None = Field(None, ge=0, le=3, description="Priority level (0-3)")
+    layout_mode: str | None = Field(None, description="Display layout mode")
 
     @field_validator("id")
     @classmethod
@@ -35,7 +34,7 @@ class WorkFlowyNode(BaseModel):
 
     @field_validator("priority")
     @classmethod
-    def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+    def validate_priority(cls, v: int | None) -> int | None:
         """Ensure priority is within valid range."""
         if v is not None and (v < 0 or v > 3):
             raise ValueError("Priority must be between 0 and 3")

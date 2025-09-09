@@ -1,9 +1,9 @@
 """Integration tests for authentication and error handling."""
 
 import os
+from unittest.mock import AsyncMock, patch
+
 import pytest
-from typing import Any, Dict
-from unittest.mock import patch, AsyncMock
 
 
 class TestAuthenticationAndErrors:
@@ -20,31 +20,30 @@ class TestAuthenticationAndErrors:
     async def test_invalid_api_key(self) -> None:
         """Test that invalid API key returns proper error."""
         from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.client.api_client import WorkFlowyClient
 
-        with patch.dict(os.environ, {"WORKFLOWY_API_KEY": "invalid-key"}):
-            # Mock API to return 401
-            with patch("workflowy_mcp.client.api_client.httpx.AsyncClient") as mock_client:
-                mock_response = AsyncMock()
-                mock_response.status_code = 401
-                mock_response.json.return_value = {"error": "Unauthorized"}
-                mock_client.return_value.get.return_value = mock_response
+        with (
+            patch.dict(os.environ, {"WORKFLOWY_API_KEY": "invalid-key"}),
+            patch("workflowy_mcp.client.api_client.httpx.AsyncClient") as mock_client,
+        ):
+            mock_response = AsyncMock()
+            mock_response.status_code = 401
+            mock_response.json.return_value = {"error": "Unauthorized"}
+            mock_client.return_value.get.return_value = mock_response
 
-                with pytest.raises(Exception) as exc_info:
-                    # Access the actual function from FunctionTool
-                    await list_nodes.fn()
+            with pytest.raises(Exception) as exc_info:
+                # Access the actual function from FunctionTool
+                await list_nodes.fn()
 
-                assert "unauthorized" in str(exc_info.value).lower()
+            assert "unauthorized" in str(exc_info.value).lower()
 
     @pytest.mark.asyncio
     async def test_rate_limit_handling(self) -> None:
         """Test that rate limiting is handled with retry logic."""
         from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.client.retry import RetryHandler
 
         call_count = 0
 
-        async def mock_api_call(*args, **kwargs):
+        async def mock_api_call(*_args, **_kwargs):
             nonlocal call_count
             call_count += 1
 
@@ -63,8 +62,9 @@ class TestAuthenticationAndErrors:
     @pytest.mark.asyncio
     async def test_network_error_handling(self) -> None:
         """Test handling of network errors."""
-        from workflowy_mcp.server import get_node
         import httpx
+
+        from workflowy_mcp.server import get_node
 
         with patch("workflowy_mcp.client.api_client.httpx.AsyncClient.get") as mock_get:
             mock_get.side_effect = httpx.NetworkError("Connection failed")
@@ -80,8 +80,9 @@ class TestAuthenticationAndErrors:
     @pytest.mark.asyncio
     async def test_timeout_handling(self) -> None:
         """Test handling of request timeouts."""
-        from workflowy_mcp.server import create_node
         import httpx
+
+        from workflowy_mcp.server import create_node
 
         with patch("workflowy_mcp.client.api_client.httpx.AsyncClient.post") as mock_post:
             mock_post.side_effect = httpx.TimeoutException("Request timed out")

@@ -1,6 +1,7 @@
 """Error response models and exception classes."""
 
-from typing import Optional, Dict, Any
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -9,7 +10,7 @@ class ErrorResponse(BaseModel):
 
     error: str = Field(..., description="Error message")
     code: str = Field(..., description="Error code")
-    details: Optional[Dict[str, Any]] = Field(None, description="Additional error context")
+    details: dict[str, Any] | None = Field(None, description="Additional error context")
     success: bool = Field(False, description="Always false for errors")
 
     class Config:
@@ -29,7 +30,7 @@ class WorkFlowyError(Exception):
     """Base exception for WorkFlowy MCP errors."""
 
     def __init__(
-        self, message: str, code: str = "WORKFLOWY_ERROR", details: Optional[Dict[str, Any]] = None
+        self, message: str, code: str = "WORKFLOWY_ERROR", details: dict[str, Any] | None = None
     ):
         """Initialize the error."""
         self.message = message
@@ -46,7 +47,7 @@ class AuthenticationError(WorkFlowyError):
     """Raised when authentication fails."""
 
     def __init__(
-        self, message: str = "Authentication failed", details: Optional[Dict[str, Any]] = None
+        self, message: str = "Authentication failed", details: dict[str, Any] | None = None
     ):
         """Initialize authentication error."""
         super().__init__(message, "AUTH_ERROR", details)
@@ -55,7 +56,7 @@ class AuthenticationError(WorkFlowyError):
 class NodeNotFoundError(WorkFlowyError):
     """Raised when a requested node doesn't exist."""
 
-    def __init__(self, node_id: str, message: Optional[str] = None):
+    def __init__(self, node_id: str, message: str | None = None):
         """Initialize node not found error."""
         msg = message or f"Node with ID '{node_id}' not found"
         super().__init__(msg, "NODE_NOT_FOUND", {"node_id": node_id})
@@ -64,7 +65,7 @@ class NodeNotFoundError(WorkFlowyError):
 class ValidationError(WorkFlowyError):
     """Raised when input validation fails."""
 
-    def __init__(self, message: str, field: Optional[str] = None):
+    def __init__(self, message: str, field: str | None = None):
         """Initialize validation error."""
         details = {"field": field} if field else {}
         super().__init__(message, "VALIDATION_ERROR", details)
@@ -73,7 +74,7 @@ class ValidationError(WorkFlowyError):
 class RateLimitError(WorkFlowyError):
     """Raised when API rate limit is exceeded."""
 
-    def __init__(self, retry_after: Optional[int] = None):
+    def __init__(self, retry_after: int | None = None):
         """Initialize rate limit error."""
         message = "Rate limit exceeded"
         details = {}
@@ -87,7 +88,7 @@ class NetworkError(WorkFlowyError):
     """Raised when network operations fail."""
 
     def __init__(
-        self, message: str = "Network error occurred", details: Optional[Dict[str, Any]] = None
+        self, message: str = "Network error occurred", details: dict[str, Any] | None = None
     ):
         """Initialize network error."""
         super().__init__(message, "NETWORK_ERROR", details)
@@ -96,7 +97,7 @@ class NetworkError(WorkFlowyError):
 class TimeoutError(WorkFlowyError):
     """Raised when operations timeout."""
 
-    def __init__(self, operation: Optional[str] = None):
+    def __init__(self, operation: str | None = None):
         """Initialize timeout error."""
         message = f"Operation '{operation}' timed out" if operation else "Request timed out"
         super().__init__(message, "TIMEOUT_ERROR", {"operation": operation} if operation else {})

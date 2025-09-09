@@ -1,28 +1,24 @@
 """WorkFlowy MCP server implementation using FastMCP."""
 
-import os
 import logging
-from typing import Optional
 from contextlib import asynccontextmanager
 
 from fastmcp import FastMCP
-from pydantic import SecretStr
 
+from .client import AdaptiveRateLimiter, WorkFlowyClient
+from .config import ServerConfig, setup_logging
 from .models import (
-    APIConfiguration,
     NodeCreateRequest,
-    NodeUpdateRequest,
     NodeListRequest,
+    NodeUpdateRequest,
     WorkFlowyNode,
 )
-from .client import WorkFlowyClient, AdaptiveRateLimiter
-from .config import ServerConfig, setup_logging
 
 logger = logging.getLogger(__name__)
 
 # Global client instance
-_client: Optional[WorkFlowyClient] = None
-_rate_limiter: Optional[AdaptiveRateLimiter] = None
+_client: WorkFlowyClient | None = None
+_rate_limiter: AdaptiveRateLimiter | None = None
 
 
 def get_client() -> WorkFlowyClient:
@@ -34,7 +30,7 @@ def get_client() -> WorkFlowyClient:
 
 
 @asynccontextmanager
-async def lifespan(app: FastMCP):
+async def lifespan(_app: FastMCP):
     """Manage server lifecycle."""
     global _client, _rate_limiter
 
@@ -80,8 +76,8 @@ mcp = FastMCP(
 @mcp.tool(name="workflowy_create_node", description="Create a new node in WorkFlowy")
 async def create_node(
     name: str,
-    parent_id: Optional[str] = None,
-    note: Optional[str] = None,
+    parent_id: str | None = None,
+    note: str | None = None,
     completed: bool = False,
 ) -> WorkFlowyNode:
     """Create a new node in WorkFlowy.
@@ -122,9 +118,9 @@ async def create_node(
 @mcp.tool(name="workflowy_update_node", description="Update an existing WorkFlowy node")
 async def update_node(
     node_id: str,
-    name: Optional[str] = None,
-    note: Optional[str] = None,
-    completed: Optional[bool] = None,
+    name: str | None = None,
+    note: str | None = None,
+    completed: bool | None = None,
 ) -> WorkFlowyNode:
     """Update an existing WorkFlowy node.
 
@@ -189,9 +185,9 @@ async def get_node(node_id: str) -> WorkFlowyNode:
 # Tool: List Nodes
 @mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes with optional filtering")
 async def list_nodes(
-    parent_id: Optional[str] = None,
+    parent_id: str | None = None,
     include_completed: bool = True,
-    max_depth: Optional[int] = None,
+    max_depth: int | None = None,
     limit: int = 100,
     offset: int = 0,
 ) -> dict:
@@ -406,6 +402,5 @@ if __name__ == "__main__":
     setup_logging()
 
     # Run the server
-    import sys
 
     mcp.run(transport="stdio")

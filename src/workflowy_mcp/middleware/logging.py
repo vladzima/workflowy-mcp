@@ -1,11 +1,12 @@
 """Logging middleware for WorkFlowy MCP Server."""
 
 import json
-import time
 import logging
-from typing import Any, Callable, Dict, Optional
-from functools import wraps
+import time
+from collections.abc import Callable
 from datetime import datetime
+from functools import wraps
+from typing import Any
 
 # Configure structured logging
 logging.basicConfig(
@@ -19,7 +20,7 @@ def log_request_response(func: Callable) -> Callable:
     """Decorator to log MCP tool requests and responses."""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs) -> Dict[str, Any]:
+    async def wrapper(*args, **kwargs) -> dict[str, Any]:
         start_time = time.time()
         request_id = f"{func.__name__}_{int(start_time * 1000)}"
 
@@ -91,7 +92,7 @@ def _sanitize_for_logging(data: Any, max_length: int = 200) -> Any:
             else:
                 sanitized[key] = _sanitize_for_logging(value, max_length)
         return sanitized
-    elif isinstance(data, (list, tuple)):
+    elif isinstance(data, list | tuple):
         return [_sanitize_for_logging(item, max_length) for item in data[:10]]  # Limit array size
     elif isinstance(data, str):
         if len(data) > max_length:
@@ -110,10 +111,10 @@ class LoggingMiddleware:
         self.logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
         self.request_count = 0
         self.request_times: list[float] = []
-        self.tool_usage: Dict[str, int] = {}
+        self.tool_usage: dict[str, int] = {}
 
     def log_request(
-        self, tool_name: str, params: Dict[str, Any], request_id: Optional[str] = None
+        self, tool_name: str, params: dict[str, Any], request_id: str | None = None
     ) -> str:
         """
         Log an incoming request.
@@ -140,7 +141,7 @@ class LoggingMiddleware:
         return request_id
 
     def log_response(
-        self, request_id: str, tool_name: str, response: Dict[str, Any], execution_time: float
+        self, request_id: str, tool_name: str, response: dict[str, Any], execution_time: float
     ) -> None:
         """Log a response."""
         self.request_times.append(execution_time)
@@ -174,7 +175,7 @@ class LoggingMiddleware:
             exc_info=True,
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get logging statistics."""
         avg_time = sum(self.request_times) / len(self.request_times) if self.request_times else 0
         return {
@@ -184,7 +185,7 @@ class LoggingMiddleware:
             "recent_execution_times": self.request_times[-10:],  # Last 10 requests
         }
 
-    def log_server_start(self, config: Dict[str, Any]) -> None:
+    def log_server_start(self, config: dict[str, Any]) -> None:
         """Log server startup."""
         self.logger.info(
             "WorkFlowy MCP Server started",

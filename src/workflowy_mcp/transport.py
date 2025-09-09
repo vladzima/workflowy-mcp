@@ -1,11 +1,11 @@
 """STDIO transport handler for WorkFlowy MCP Server."""
 
-import sys
-import json
 import asyncio
-from typing import Any, Dict, Optional
-from dataclasses import dataclass
+import json
 import logging
+import sys
+from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -15,11 +15,11 @@ class Message:
     """Represents a JSON-RPC message."""
 
     jsonrpc: str = "2.0"
-    id: Optional[int] = None
-    method: Optional[str] = None
-    params: Optional[Dict[str, Any]] = None
-    result: Optional[Any] = None
-    error: Optional[Dict[str, Any]] = None
+    id: int | None = None
+    method: str | None = None
+    params: dict[str, Any] | None = None
+    result: Any | None = None
+    error: dict[str, Any] | None = None
 
 
 class STDIOTransport:
@@ -60,7 +60,7 @@ class STDIOTransport:
             self.writer.close()
             await self.writer.wait_closed()
 
-    async def read_message(self) -> Optional[Message]:
+    async def read_message(self) -> Message | None:
         """
         Read a message from stdin.
 
@@ -151,7 +151,7 @@ class STDIOTransport:
         except Exception as e:
             logger.error(f"Error writing message: {e}")
 
-    async def send_request(self, method: str, params: Optional[Dict[str, Any]] = None) -> int:
+    async def send_request(self, method: str, params: dict[str, Any] | None = None) -> int:
         """
         Send a request message.
 
@@ -168,7 +168,7 @@ class STDIOTransport:
         return self.message_id
 
     async def send_response(
-        self, request_id: int, result: Optional[Any] = None, error: Optional[Dict[str, Any]] = None
+        self, request_id: int, result: Any | None = None, error: dict[str, Any] | None = None
     ) -> None:
         """
         Send a response message.
@@ -181,7 +181,7 @@ class STDIOTransport:
         message = Message(id=request_id, result=result, error=error)
         await self.write_message(message)
 
-    async def send_notification(self, method: str, params: Optional[Dict[str, Any]] = None) -> None:
+    async def send_notification(self, method: str, params: dict[str, Any] | None = None) -> None:
         """
         Send a notification message (no response expected).
 
@@ -199,7 +199,7 @@ class TransportManager:
     def __init__(self):
         """Initialize transport manager."""
         self.transport = STDIOTransport()
-        self.handlers: Dict[str, Any] = {}
+        self.handlers: dict[str, Any] = {}
 
     def register_handler(self, method: str, handler: Any) -> None:
         """

@@ -1,8 +1,7 @@
 """Contract tests for the workflowy_create_node MCP tool."""
 
-import json
-from typing import Any, Dict
-from unittest.mock import patch, AsyncMock
+from typing import Any
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastmcp import FastMCP
@@ -12,7 +11,7 @@ class TestCreateNodeContract:
     """Contract tests for node creation tool."""
 
     @pytest.mark.asyncio
-    async def test_create_node_input_schema(self, mock_mcp_server: FastMCP) -> None:
+    async def test_create_node_input_schema(self, _mock_mcp_server: FastMCP) -> None:
         """Test that create_node accepts the correct input schema."""
         from workflowy_mcp.server import mcp
 
@@ -37,7 +36,7 @@ class TestCreateNodeContract:
 
     @pytest.mark.asyncio
     async def test_create_node_with_minimal_input(
-        self, sample_create_request: Dict[str, Any]
+        self, _sample_create_request: dict[str, Any]
     ) -> None:
         """Test creating a node with only required fields."""
         from ..tool_adapters import test_create_node
@@ -50,7 +49,7 @@ class TestCreateNodeContract:
         assert result["success"] is True
 
     @pytest.mark.asyncio
-    async def test_create_node_with_full_input(self, sample_create_request: Dict[str, Any]) -> None:
+    async def test_create_node_with_full_input(self, sample_create_request: dict[str, Any]) -> None:
         """Test creating a node with all optional fields."""
         from ..tool_adapters import test_create_node
 
@@ -89,8 +88,8 @@ class TestCreateNodeContract:
     @pytest.mark.asyncio
     async def test_create_node_handles_api_errors(self) -> None:
         """Test that API errors are handled properly."""
-        from workflowy_mcp.server import create_node as create_node_tool
         from workflowy_mcp.models import NetworkError
+        from workflowy_mcp.server import create_node as create_node_tool
 
         # Get the actual function
         create_node = create_node_tool.fn

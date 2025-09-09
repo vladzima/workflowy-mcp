@@ -1,10 +1,11 @@
 """Shared test fixtures and configuration for WorkFlowy MCP tests."""
 
-import sys
-import os
-from pathlib import Path
 import asyncio
-from typing import Any, AsyncGenerator, Dict
+import os
+import sys
+from collections.abc import AsyncGenerator
+from pathlib import Path
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -46,7 +47,7 @@ def mock_api_client() -> AsyncMock:
 
 
 @pytest.fixture
-def sample_node_data() -> Dict[str, Any]:
+def sample_node_data() -> dict[str, Any]:
     """Provide sample WorkFlowy node data."""
     return {
         "id": "node-123",
@@ -60,7 +61,7 @@ def sample_node_data() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def sample_create_request() -> Dict[str, Any]:
+def sample_create_request() -> dict[str, Any]:
     """Provide sample create node request data."""
     return {
         "name": "New Test Node",
@@ -71,7 +72,7 @@ def sample_create_request() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def sample_update_request() -> Dict[str, Any]:
+def sample_update_request() -> dict[str, Any]:
     """Provide sample update node request data."""
     return {
         "id": "node-123",
@@ -82,7 +83,7 @@ def sample_update_request() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def sample_list_request() -> Dict[str, Any]:
+def sample_list_request() -> dict[str, Any]:
     """Provide sample list nodes request data."""
     return {
         "parentId": None,

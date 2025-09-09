@@ -1,10 +1,9 @@
 """Rate limiting handler for WorkFlowy API requests."""
 
 import asyncio
-import time
-from typing import Optional, Dict, Any
-from collections import deque
 import logging
+import time
+from collections import deque
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ class RateLimiter:
     def __init__(
         self,
         requests_per_second: float = 10.0,
-        burst_size: Optional[int] = None,
+        burst_size: int | None = None,
         retry_after_header: bool = True,
     ):
         """Initialize rate limiter.
@@ -39,7 +38,7 @@ class RateLimiter:
         self.request_times = deque(maxlen=100)
 
         # Track retry-after if we hit rate limits
-        self.retry_after_until: Optional[float] = None
+        self.retry_after_until: float | None = None
 
     async def acquire(self, cost: float = 1.0) -> None:
         """Acquire permission to make a request.
@@ -145,7 +144,7 @@ class AdaptiveRateLimiter(RateLimiter):
                 self.requests_per_second = new_rate
                 self.consecutive_successes = 0
 
-    def on_rate_limit(self, retry_after: Optional[int] = None) -> None:
+    def on_rate_limit(self, retry_after: int | None = None) -> None:
         """Called when we hit a rate limit."""
         self.consecutive_failures += 1
         self.consecutive_successes = 0

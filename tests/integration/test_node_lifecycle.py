@@ -1,9 +1,6 @@
 """Integration tests for WorkFlowy node lifecycle operations."""
 
-import os
 import pytest
-from typing import Any, Dict, Optional
-from unittest.mock import AsyncMock, patch
 
 
 class TestNodeLifecycle:
@@ -12,11 +9,13 @@ class TestNodeLifecycle:
     @pytest.mark.asyncio
     async def test_full_node_lifecycle(self) -> None:
         """Test creating, updating, completing, and deleting a node."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import update_node
-        from workflowy_mcp.server import get_node
-        from workflowy_mcp.server import complete_node
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import (
+            complete_node,
+            create_node,
+            delete_node,
+            get_node,
+            update_node,
+        )
 
         # Create a node
         created = await create_node.fn(
@@ -43,23 +42,23 @@ class TestNodeLifecycle:
         assert deleted["success"] is True
 
         # Verify deletion
-        with pytest.raises(Exception):
+        from workflowy_mcp.models import NodeNotFoundError
+
+        with pytest.raises(NodeNotFoundError):
             await get_node.fn(node_id=node_id)
 
     @pytest.mark.asyncio
     async def test_parent_child_relationship(self) -> None:
         """Test creating nodes with parent-child relationships."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, list_nodes
 
         # Create parent node
         parent = await create_node.fn(name="Parent Node")
         parent_id = parent["node"]["id"]
 
         # Create child nodes
-        child1 = await create_node.fn(name="Child 1", parent_id=parent_id)
-        child2 = await create_node.fn(name="Child 2", parent_id=parent_id)
+        await create_node.fn(name="Child 1", parent_id=parent_id)
+        await create_node.fn(name="Child 2", parent_id=parent_id)
 
         # List children of parent
         children = await list_nodes.fn(parent_id=parent_id)
@@ -71,10 +70,7 @@ class TestNodeLifecycle:
     @pytest.mark.asyncio
     async def test_bulk_operations(self) -> None:
         """Test performing bulk operations on multiple nodes."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import list_nodes
-        from workflowy_mcp.server import complete_node
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import complete_node, create_node, delete_node, list_nodes
 
         created_ids = []
 
@@ -102,11 +98,13 @@ class TestNodeLifecycle:
     @pytest.mark.asyncio
     async def test_node_state_transitions(self) -> None:
         """Test node state transitions between completed and uncompleted."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import complete_node
-        from workflowy_mcp.server import uncomplete_node
-        from workflowy_mcp.server import get_node
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import (
+            complete_node,
+            create_node,
+            delete_node,
+            get_node,
+            uncomplete_node,
+        )
 
         # Create a node
         created = await create_node.fn(name="State Test Node")
@@ -132,10 +130,7 @@ class TestNodeLifecycle:
     @pytest.mark.asyncio
     async def test_node_with_metadata(self) -> None:
         """Test creating and updating nodes with all metadata fields."""
-        from workflowy_mcp.server import create_node
-        from workflowy_mcp.server import update_node
-        from workflowy_mcp.server import get_node
-        from workflowy_mcp.server import delete_node
+        from workflowy_mcp.server import create_node, delete_node, get_node, update_node
 
         # Create node with full metadata
         created = await create_node.fn(
@@ -144,7 +139,7 @@ class TestNodeLifecycle:
         node_id = created["node"]["id"]
 
         # Update with different metadata
-        updated = await update_node.fn(
+        await update_node.fn(
             node_id=node_id, name="Updated Metadata Node", note="Updated note content", priority=3
         )
 

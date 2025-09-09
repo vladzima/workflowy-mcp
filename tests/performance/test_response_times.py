@@ -1,19 +1,17 @@
 """Performance tests for API operations."""
 
-import pytest
 import asyncio
-import time
-from typing import List, Dict, Any
-from unittest.mock import AsyncMock, patch
 import statistics
+import time
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from workflowy_mcp.server import (
     create_node,
     get_node,
-    update_node,
     list_nodes,
     search_nodes,
-    delete_node,
 )
 
 
@@ -220,7 +218,7 @@ class TestResponseTimes:
             # Simulate cache behavior - first call slower
             call_count = 0
 
-            async def mock_get_node(*args, **kwargs):
+            async def mock_get_node(*_args, **_kwargs):
                 nonlocal call_count
                 call_count += 1
                 if call_count == 1:

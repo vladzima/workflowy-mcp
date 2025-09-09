@@ -1,6 +1,5 @@
 """Request and response models for WorkFlowy operations."""
 
-from typing import List, Optional, Any, Dict
 from pydantic import BaseModel, Field, field_validator
 
 from .node import WorkFlowyNode
@@ -9,10 +8,10 @@ from .node import WorkFlowyNode
 class NodeCreateRequest(BaseModel):
     """Request payload for creating a new node."""
 
-    parentId: Optional[str] = Field(None, description="Parent node ID (null for root level)")
+    parentId: str | None = Field(None, description="Parent node ID (null for root level)")
     nm: str = Field(..., description="Name/text content (required)")
-    no: Optional[str] = Field(None, description="Note content (optional)")
-    priority: Optional[int] = Field(None, ge=0, le=3, description="Priority level (optional)")
+    no: str | None = Field(None, description="Note content (optional)")
+    priority: int | None = Field(None, ge=0, le=3, description="Priority level (optional)")
 
     @field_validator("nm")
     @classmethod
@@ -24,7 +23,7 @@ class NodeCreateRequest(BaseModel):
 
     @field_validator("priority")
     @classmethod
-    def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+    def validate_priority(cls, v: int | None) -> int | None:
         """Ensure priority is within valid range."""
         if v is not None and (v < 0 or v > 3):
             raise ValueError("Priority must be between 0 and 3")
@@ -34,14 +33,14 @@ class NodeCreateRequest(BaseModel):
 class NodeUpdateRequest(BaseModel):
     """Request payload for updating an existing node."""
 
-    nm: Optional[str] = Field(None, description="New name/text content")
-    no: Optional[str] = Field(None, description="New note content")
-    priority: Optional[int] = Field(None, ge=0, le=3, description="New priority level")
-    parentId: Optional[str] = Field(None, description="New parent (for moving nodes)")
+    nm: str | None = Field(None, description="New name/text content")
+    no: str | None = Field(None, description="New note content")
+    priority: int | None = Field(None, ge=0, le=3, description="New priority level")
+    parentId: str | None = Field(None, description="New parent (for moving nodes)")
 
     @field_validator("priority")
     @classmethod
-    def validate_priority(cls, v: Optional[int]) -> Optional[int]:
+    def validate_priority(cls, v: int | None) -> int | None:
         """Ensure priority is within valid range."""
         if v is not None and (v < 0 or v > 3):
             raise ValueError("Priority must be between 0 and 3")
@@ -55,9 +54,9 @@ class NodeUpdateRequest(BaseModel):
 class NodeListRequest(BaseModel):
     """Request parameters for listing/searching nodes."""
 
-    parentId: Optional[str] = Field(None, description="Filter by parent node")
-    completed: Optional[bool] = Field(None, description="Filter by completion status")
-    query: Optional[str] = Field(None, description="Search query for text content")
+    parentId: str | None = Field(None, description="Filter by parent node")
+    completed: bool | None = Field(None, description="Filter by completion status")
+    query: str | None = Field(None, description="Search query for text content")
     limit: int = Field(100, ge=1, le=1000, description="Maximum results")
     offset: int = Field(0, ge=0, description="Pagination offset")
 
@@ -85,17 +84,17 @@ class NodeResponse(BaseModel):
 
     node: WorkFlowyNode
     success: bool = True
-    message: Optional[str] = None
+    message: str | None = None
 
 
 class NodeListResponse(BaseModel):
     """Response for listing multiple nodes."""
 
-    nodes: List[WorkFlowyNode]
+    nodes: list[WorkFlowyNode]
     total: int
     success: bool = True
     hasMore: bool = False
-    nextOffset: Optional[int] = None
+    nextOffset: int | None = None
 
 
 class DeleteResponse(BaseModel):
@@ -104,7 +103,7 @@ class DeleteResponse(BaseModel):
     success: bool = True
     deleted: bool = True
     message: str = "Node deleted successfully"
-    nodeId: Optional[str] = None
+    nodeId: str | None = None
 
 
 class SearchRequest(BaseModel):
@@ -125,7 +124,7 @@ class SearchRequest(BaseModel):
 class SearchResponse(BaseModel):
     """Response for search operations."""
 
-    nodes: List[WorkFlowyNode]
+    nodes: list[WorkFlowyNode]
     total: int
     query: str
     success: bool = True
