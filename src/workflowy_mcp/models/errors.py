@@ -46,7 +46,9 @@ class WorkFlowyError(Exception):
 
     def to_response(self) -> ErrorResponse:
         """Convert exception to error response."""
-        return ErrorResponse(error=self.message, code=self.code, details=self.details, success=False)
+        return ErrorResponse(
+            error=self.message, code=self.code, details=self.details, success=False
+        )
 
 
 class AuthenticationError(WorkFlowyError):

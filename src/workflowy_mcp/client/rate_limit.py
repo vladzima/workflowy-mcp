@@ -123,7 +123,11 @@ class AdaptiveRateLimiter(RateLimiter):
     """Adaptive rate limiter that adjusts based on server responses."""
 
     def __init__(
-        self, initial_rate: float = 10.0, min_rate: float = 1.0, max_rate: float = 100.0, **kwargs: Any
+        self,
+        initial_rate: float = 10.0,
+        min_rate: float = 1.0,
+        max_rate: float = 100.0,
+        **kwargs: Any,
     ):
         """Initialize adaptive rate limiter."""
         super().__init__(requests_per_second=initial_rate, **kwargs)

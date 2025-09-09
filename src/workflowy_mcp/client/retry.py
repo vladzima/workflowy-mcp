@@ -89,7 +89,9 @@ class RetryHandler:
         raise RuntimeError("Unexpected retry logic error")
 
 
-def with_retry(max_retries: int = 3, base_delay: float = 1.0, max_delay: float = 60.0) -> Callable[..., Any]:
+def with_retry(
+    max_retries: int = 3, base_delay: float = 1.0, max_delay: float = 60.0
+) -> Callable[..., Any]:
     """Decorator to add retry logic to async functions."""
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
