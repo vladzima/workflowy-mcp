@@ -114,7 +114,8 @@ def mock_global_client():
     mock_client = AsyncMock(spec=WorkFlowyClient)
 
     # Patch the global _client variable
-    with patch.object(server, "_client", mock_client), patch.object(
-        server, "get_client", return_value=mock_client
+    with (
+        patch.object(server, "_client", mock_client),
+        patch.object(server, "get_client", return_value=mock_client),
     ):
         yield mock_client

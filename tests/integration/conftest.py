@@ -36,7 +36,7 @@ def mock_workflowy_client():
         created_nodes[node_id] = node
 
         # Track parent-child relationship
-        if hasattr(request, 'parentId') and request.parentId:
+        if hasattr(request, "parentId") and request.parentId:
             if request.parentId not in parent_child_map:
                 parent_child_map[request.parentId] = []
             parent_child_map[request.parentId].append(node_id)
@@ -120,7 +120,7 @@ def mock_workflowy_client():
         nodes = list(created_nodes.values())
 
         # Filter by parent_id if provided
-        if hasattr(request, 'parentId') and request.parentId:
+        if hasattr(request, "parentId") and request.parentId:
             # Only return children of the specified parent
             child_ids = parent_child_map.get(request.parentId, [])
             nodes = [n for n in nodes if n.id in child_ids]
@@ -130,11 +130,11 @@ def mock_workflowy_client():
         # the failing tests show all nodes are being returned regardless
 
         # Apply pagination
-        limit = getattr(request, 'limit', 100)
-        offset = getattr(request, 'offset', 0)
+        limit = getattr(request, "limit", 100)
+        offset = getattr(request, "offset", 0)
 
         total = len(nodes)
-        paginated_nodes = nodes[offset:offset + limit]
+        paginated_nodes = nodes[offset : offset + limit]
 
         return (paginated_nodes, total)
 
