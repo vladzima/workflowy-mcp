@@ -78,7 +78,7 @@ async def create_node(
     name: str,
     parent_id: str | None = None,
     note: str | None = None,
-    completed: bool = False,
+    _completed: bool = False,
 ) -> WorkFlowyNode:
     """Create a new node in WorkFlowy.
 
@@ -86,7 +86,7 @@ async def create_node(
         name: The text content of the node
         parent_id: ID of the parent node (optional)
         note: Additional note/description for the node
-        completed: Whether the node should be marked as completed
+        _completed: Whether the node should be marked as completed (not used)
 
     Returns:
         The created WorkFlowy node
@@ -119,7 +119,7 @@ async def update_node(
     node_id: str,
     name: str | None = None,
     note: str | None = None,
-    completed: bool | None = None,
+    _completed: bool | None = None,
 ) -> WorkFlowyNode:
     """Update an existing WorkFlowy node.
 
@@ -127,7 +127,7 @@ async def update_node(
         node_id: The ID of the node to update
         name: New text content for the node (optional)
         note: New note/description (optional)
-        completed: New completion status (optional)
+        _completed: New completion status (not used - use complete_node/uncomplete_node)
 
     Returns:
         The updated WorkFlowy node
@@ -184,8 +184,8 @@ async def get_node(node_id: str) -> WorkFlowyNode:
 @mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes with optional filtering")
 async def list_nodes(
     parent_id: str | None = None,
-    include_completed: bool = True,
-    max_depth: int | None = None,
+    _include_completed: bool = True,
+    _max_depth: int | None = None,
     limit: int = 100,
     offset: int = 0,
 ) -> dict:
@@ -193,8 +193,8 @@ async def list_nodes(
 
     Args:
         parent_id: Filter by parent node ID (optional)
-        include_completed: Whether to include completed nodes
-        max_depth: Maximum depth of child nodes to retrieve
+        _include_completed: Whether to include completed nodes (not used)
+        _max_depth: Maximum depth of child nodes to retrieve (not used)
         limit: Maximum number of nodes to return
         offset: Number of nodes to skip (for pagination)
 
