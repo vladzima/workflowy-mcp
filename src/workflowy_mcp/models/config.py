@@ -8,7 +8,7 @@ class APIConfiguration(BaseModel):
     """Server configuration for WorkFlowy API access."""
 
     api_key: SecretStr = Field(..., description="WorkFlowy API authentication key")
-    base_url: str = Field("https://api.workflowy.com", description="API base URL")
+    base_url: str = Field("https://workflowy.com/api/v1", description="API base URL")
     timeout: int = Field(30, gt=0, description="Request timeout in seconds")
     max_retries: int = Field(3, ge=0, description="Maximum retry attempts")
 
@@ -54,7 +54,7 @@ class ServerConfig(BaseSettings):
         ..., description="WorkFlowy API key", alias="WORKFLOWY_API_KEY"
     )
     workflowy_api_url: str = Field(
-        "https://api.workflowy.com", description="WorkFlowy API base URL", alias="WORKFLOWY_API_URL"
+        "https://workflowy.com/api/v1", description="WorkFlowy API base URL", alias="WORKFLOWY_API_URL"
     )
     workflowy_timeout: int = Field(
         30, description="API request timeout in seconds", alias="WORKFLOWY_TIMEOUT"

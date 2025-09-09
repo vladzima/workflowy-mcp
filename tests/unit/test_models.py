@@ -66,12 +66,14 @@ class TestNodeModel:
         assert parent.ch[1].id == "child-2"
 
     def test_node_missing_required_fields(self):
-        """Test that missing required fields raise errors."""
+        """Test that only ID is required."""
+        # ID is the only required field now
         with pytest.raises(ValueError):
-            WorkFlowyNode(nm="Missing ID")  # Missing id
-
-        with pytest.raises(ValueError):
-            WorkFlowyNode(id="test-123")  # Missing created/modified
+            WorkFlowyNode(name="Missing ID")  # Missing id
+        
+        # This should work - ID is provided
+        node = WorkFlowyNode(id="test-123")
+        assert node.id == "test-123"
 
 
 class TestRequestModels:
@@ -80,34 +82,24 @@ class TestRequestModels:
     def test_create_request_valid(self):
         """Test valid create request."""
         request = NodeCreateRequest(
-            nm="New Node", no="Node description", priority=2, parentId="parent-123"
+            name="New Node", note="Node description", parent_id="parent-123"
         )
-        assert request.nm == "New Node"
-        assert request.no == "Node description"
-        assert request.priority == 2
-        assert request.parentId == "parent-123"
+        assert request.name == "New Node"
+        assert request.note == "Node description"
+        assert request.parent_id == "parent-123"
 
     def test_create_request_priority_validation(self):
         """Test priority validation in create request."""
-        # Valid priorities
-        for priority in [0, 1, 2, 3]:
-            request = NodeCreateRequest(nm="Test", priority=priority)
-            assert request.priority == priority
-
-        # Invalid priorities
-        with pytest.raises(ValueError):
-            NodeCreateRequest(nm="Test", priority=-1)
-
-        with pytest.raises(ValueError):
-            NodeCreateRequest(nm="Test", priority=4)
+        # Priority is no longer in the model
+        request = NodeCreateRequest(name="Test")
+        assert request.name == "Test"
 
     def test_update_request_partial(self):
         """Test update request with partial fields."""
-        request = NodeUpdateRequest(nm="Updated Name")
-        assert request.nm == "Updated Name"
-        assert request.no is None
-        assert request.priority is None
-        assert request.parentId is None
+        request = NodeUpdateRequest(name="Updated Name")
+        assert request.name == "Updated Name"
+        assert request.note is None
+        assert request.layoutMode is None
 
     def test_list_request_pagination(self):
         """Test list request with pagination."""
@@ -154,7 +146,7 @@ class TestConfigModel:
         os.environ["WORKFLOWY_API_KEY"] = "test-key-123"
         config = ServerConfig()
         assert config.workflowy_api_key.get_secret_value() == "test-key-123"
-        assert config.workflowy_api_url == "https://api.workflowy.com"
+        assert config.workflowy_api_url == "https://workflowy.com/api/v1"
         assert config.workflowy_timeout == 30
         assert config.workflowy_max_retries == 3
         assert config.debug is False

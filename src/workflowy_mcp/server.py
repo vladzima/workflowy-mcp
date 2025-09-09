@@ -94,9 +94,9 @@ async def create_node(
     client = get_client()
 
     request = NodeCreateRequest(  # type: ignore[call-arg]
-        nm=name,
-        parentId=parent_id,
-        no=note,
+        name=name,
+        parent_id=parent_id,
+        note=note,
     )
 
     if _rate_limiter:
@@ -135,8 +135,8 @@ async def update_node(
     client = get_client()
 
     request = NodeUpdateRequest(  # type: ignore[call-arg]
-        nm=name,
-        no=note,
+        name=name,
+        note=note,
     )
 
     if _rate_limiter:

@@ -27,19 +27,19 @@ def mock_workflowy_client():
         node_id = f"node-{node_counter[0]:03d}"
         node = WorkFlowyNode(
             id=node_id,
-            nm=request.nm or f"Node {node_counter[0]}",
-            no=request.no or "",
-            cp=False,
-            created=1704067200,
-            modified=1704067200,
+            name=getattr(request, "name", None) or f"Node {node_counter[0]}",
+            note=getattr(request, "note", ""),
+            completedAt=None,
+            createdAt=1704067200,
+            modifiedAt=1704067200,
         )
         created_nodes[node_id] = node
 
         # Track parent-child relationship
-        if hasattr(request, "parentId") and request.parentId:
-            if request.parentId not in parent_child_map:
-                parent_child_map[request.parentId] = []
-            parent_child_map[request.parentId].append(node_id)
+        if hasattr(request, "parent_id") and request.parent_id:
+            if request.parent_id not in parent_child_map:
+                parent_child_map[request.parent_id] = []
+            parent_child_map[request.parent_id].append(node_id)
 
         return node
 
@@ -65,49 +65,49 @@ def mock_workflowy_client():
         """Mock update_node that updates the node."""
         if node_id in created_nodes:
             node = created_nodes[node_id]
-            if request.nm is not None:
-                node.nm = request.nm
-            if request.no is not None:
-                node.no = request.no
+            if hasattr(request, "name") and request.name is not None:
+                node.name = request.name
+            if hasattr(request, "note") and request.note is not None:
+                node.note = request.note
             return node
         # Return updated node even if not in storage
         return WorkFlowyNode(
             id=node_id,
-            nm=request.nm or "Updated Node",
-            no=request.no or "Updated note",
-            cp=False,
-            created=1704067200,
-            modified=1704067200,
+            name=getattr(request, "name", "Updated Node"),
+            note=getattr(request, "note", "Updated note"),
+            completedAt=None,
+            createdAt=1704067200,
+            modifiedAt=1704067200,
         )
 
     async def mock_complete_node(node_id):
         """Mock complete_node that marks node as completed."""
         if node_id in created_nodes:
             node = created_nodes[node_id]
-            node.cp = True
+            node.completedAt = 1704067200
             return node
         return WorkFlowyNode(
             id=node_id,
-            nm="Test Node",
-            no="Test note",
-            cp=True,
-            created=1704067200,
-            modified=1704067200,
+            name="Test Node",
+            note="Test note",
+            completedAt=1704067200,
+            createdAt=1704067200,
+            modifiedAt=1704067200,
         )
 
     async def mock_uncomplete_node(node_id):
         """Mock uncomplete_node that marks node as uncompleted."""
         if node_id in created_nodes:
             node = created_nodes[node_id]
-            node.cp = False
+            node.completedAt = None
             return node
         return WorkFlowyNode(
             id=node_id,
-            nm="Test Node",
-            no="Test note",
-            cp=False,
-            created=1704067200,
-            modified=1704067200,
+            name="Test Node",
+            note="Test note",
+            completedAt=None,
+            createdAt=1704067200,
+            modifiedAt=1704067200,
         )
 
     async def mock_list_nodes(request):
@@ -119,7 +119,7 @@ def mock_workflowy_client():
 
         nodes = list(created_nodes.values())
 
-        # Filter by parent_id if provided
+        # Filter by parent_id if provided (request has parentId field)
         if hasattr(request, "parentId") and request.parentId:
             # Only return children of the specified parent
             child_ids = parent_child_map.get(request.parentId, [])
@@ -153,11 +153,13 @@ def mock_workflowy_client():
 
         for node in created_nodes.values():
             # Skip completed nodes if not including them
-            if not include_completed and node.cp:
+            if not include_completed and node.completedAt is not None:
                 continue
 
             # Check if query matches node name or note (case-insensitive)
-            if query_lower in node.nm.lower() or (node.no and query_lower in node.no.lower()):
+            name_lower = (node.name or "").lower()
+            note_lower = (node.note or "").lower()
+            if query_lower in name_lower or query_lower in note_lower:
                 results.append(node)
 
         return results
