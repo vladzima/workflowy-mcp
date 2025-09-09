@@ -35,7 +35,7 @@ class TestDeleteNodeContract:
     @pytest.mark.asyncio
     async def test_delete_node_basic(self) -> None:
         """Test basic delete_node operation."""
-        from tests.tool_adapters import test_delete_node
+        from ..tool_adapters import test_delete_node
 
         # This will use mocked client
         result = await test_delete_node({"id": "test-id"})

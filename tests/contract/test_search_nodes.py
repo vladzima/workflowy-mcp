@@ -36,7 +36,7 @@ class TestSearchNodesContract:
     @pytest.mark.asyncio
     async def test_search_nodes_basic(self) -> None:
         """Test basic search_nodes operation."""
-        from tests.tool_adapters import test_search_nodes
+        from ..tool_adapters import test_search_nodes
 
         # This will use mocked client
         result = await test_search_nodes({"query": "test-query"})

@@ -111,9 +111,7 @@ class TestRequestModels:
 
     def test_list_request_pagination(self):
         """Test list request with pagination."""
-        request = NodeListRequest(
-            parentId="parent-123", completed=True, limit=50, offset=100
-        )
+        request = NodeListRequest(parentId="parent-123", completed=True, limit=50, offset=100)
         assert request.parentId == "parent-123"
         assert request.completed is True
         assert request.limit == 50
@@ -138,13 +136,21 @@ class TestConfigModel:
         """Test default configuration values."""
         # ServerConfig requires api_key, so we'll test with a provided key
         import os
+
         # Save and clear any existing env vars
         saved_env = {}
-        for key in ["WORKFLOWY_API_KEY", "WORKFLOWY_API_URL", "WORKFLOWY_TIMEOUT", "WORKFLOWY_MAX_RETRIES", "DEBUG", "LOG_LEVEL"]:
+        for key in [
+            "WORKFLOWY_API_KEY",
+            "WORKFLOWY_API_URL",
+            "WORKFLOWY_TIMEOUT",
+            "WORKFLOWY_MAX_RETRIES",
+            "DEBUG",
+            "LOG_LEVEL",
+        ]:
             if key in os.environ:
                 saved_env[key] = os.environ[key]
                 del os.environ[key]
-        
+
         os.environ["WORKFLOWY_API_KEY"] = "test-key-123"
         config = ServerConfig()
         assert config.workflowy_api_key.get_secret_value() == "test-key-123"
@@ -153,7 +159,7 @@ class TestConfigModel:
         assert config.workflowy_max_retries == 3
         assert config.debug is False
         assert config.log_level == "INFO"
-        
+
         # Clean up and restore
         del os.environ["WORKFLOWY_API_KEY"]
         for key, value in saved_env.items():
@@ -162,13 +168,21 @@ class TestConfigModel:
     def test_custom_config(self):
         """Test custom configuration."""
         import os
+
         # Save and clear any existing env vars
         saved_env = {}
-        for key in ["WORKFLOWY_API_KEY", "WORKFLOWY_API_URL", "WORKFLOWY_TIMEOUT", "WORKFLOWY_MAX_RETRIES", "DEBUG", "LOG_LEVEL"]:
+        for key in [
+            "WORKFLOWY_API_KEY",
+            "WORKFLOWY_API_URL",
+            "WORKFLOWY_TIMEOUT",
+            "WORKFLOWY_MAX_RETRIES",
+            "DEBUG",
+            "LOG_LEVEL",
+        ]:
             if key in os.environ:
                 saved_env[key] = os.environ[key]
                 del os.environ[key]
-        
+
         # Set custom env values
         os.environ["WORKFLOWY_API_KEY"] = "test-key"
         os.environ["WORKFLOWY_API_URL"] = "https://custom.api.com"
@@ -176,7 +190,7 @@ class TestConfigModel:
         os.environ["WORKFLOWY_MAX_RETRIES"] = "5"
         os.environ["DEBUG"] = "true"
         os.environ["LOG_LEVEL"] = "DEBUG"
-        
+
         config = ServerConfig()
         assert config.workflowy_api_key.get_secret_value() == "test-key"
         assert config.workflowy_api_url == "https://custom.api.com"
@@ -184,9 +198,16 @@ class TestConfigModel:
         assert config.workflowy_max_retries == 5
         assert config.debug is True
         assert config.log_level == "DEBUG"
-        
+
         # Clean up
-        for key in ["WORKFLOWY_API_KEY", "WORKFLOWY_API_URL", "WORKFLOWY_TIMEOUT", "WORKFLOWY_MAX_RETRIES", "DEBUG", "LOG_LEVEL"]:
+        for key in [
+            "WORKFLOWY_API_KEY",
+            "WORKFLOWY_API_URL",
+            "WORKFLOWY_TIMEOUT",
+            "WORKFLOWY_MAX_RETRIES",
+            "DEBUG",
+            "LOG_LEVEL",
+        ]:
             if key in os.environ:
                 del os.environ[key]
         # Restore original values
@@ -197,45 +218,39 @@ class TestConfigModel:
         """Test configuration validation when converting to APIConfiguration."""
         import os
         from pydantic import ValidationError as PydanticValidationError
-        
+
         # Save and clear any existing env vars
         saved_env = {}
-        for key in ["WORKFLOWY_API_KEY", "WORKFLOWY_API_URL", "WORKFLOWY_TIMEOUT", "WORKFLOWY_MAX_RETRIES"]:
+        for key in [
+            "WORKFLOWY_API_KEY",
+            "WORKFLOWY_API_URL",
+            "WORKFLOWY_TIMEOUT",
+            "WORKFLOWY_MAX_RETRIES",
+        ]:
             if key in os.environ:
                 saved_env[key] = os.environ[key]
                 del os.environ[key]
-        
+
         try:
             # Test APIConfiguration validation directly
             from workflowy_mcp.models.config import APIConfiguration
             from pydantic import SecretStr
-            
+
             # Invalid timeout
             with pytest.raises(ValueError):
-                APIConfiguration(
-                    api_key=SecretStr("test-key"),
-                    timeout=-1
-                )
-            
+                APIConfiguration(api_key=SecretStr("test-key"), timeout=-1)
+
             # Invalid max retries
             with pytest.raises(ValueError):
-                APIConfiguration(
-                    api_key=SecretStr("test-key"),
-                    max_retries=-1
-                )
-            
+                APIConfiguration(api_key=SecretStr("test-key"), max_retries=-1)
+
             # Empty API key
             with pytest.raises(ValueError):
-                APIConfiguration(
-                    api_key=SecretStr("")
-                )
-            
+                APIConfiguration(api_key=SecretStr(""))
+
             # Non-HTTPS URL
             with pytest.raises(ValueError):
-                APIConfiguration(
-                    api_key=SecretStr("test-key"),
-                    base_url="http://api.workflowy.com"
-                )
+                APIConfiguration(api_key=SecretStr("test-key"), base_url="http://api.workflowy.com")
         finally:
             # Restore original values
             for key, value in saved_env.items():

@@ -35,7 +35,7 @@ class TestCompleteNodeContract:
     @pytest.mark.asyncio
     async def test_complete_node_basic(self) -> None:
         """Test basic complete_node operation."""
-        from tests.tool_adapters import test_complete_node
+        from ..tool_adapters import test_complete_node
 
         # This will use mocked client
         result = await test_complete_node({"id": "test-id"})

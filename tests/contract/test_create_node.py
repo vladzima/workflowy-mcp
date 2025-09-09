@@ -40,7 +40,7 @@ class TestCreateNodeContract:
         self, sample_create_request: Dict[str, Any]
     ) -> None:
         """Test creating a node with only required fields."""
-        from tests.tool_adapters import test_create_node
+        from ..tool_adapters import test_create_node
 
         minimal_input = {"name": "Minimal Node"}
         result = await test_create_node(minimal_input)
@@ -52,7 +52,7 @@ class TestCreateNodeContract:
     @pytest.mark.asyncio
     async def test_create_node_with_full_input(self, sample_create_request: Dict[str, Any]) -> None:
         """Test creating a node with all optional fields."""
-        from tests.tool_adapters import test_create_node
+        from ..tool_adapters import test_create_node
 
         result = await test_create_node(sample_create_request)
 
@@ -65,7 +65,7 @@ class TestCreateNodeContract:
     @pytest.mark.asyncio
     async def test_create_node_validates_priority(self) -> None:
         """Test that priority validation works correctly."""
-        from tests.tool_adapters import test_create_node
+        from ..tool_adapters import test_create_node
 
         invalid_input = {"name": "Test Node", "priority": 5}  # Invalid priority (must be 0-3)
 

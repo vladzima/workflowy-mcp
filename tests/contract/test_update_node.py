@@ -38,7 +38,7 @@ class TestUpdateNodeContract:
     @pytest.mark.asyncio
     async def test_update_node_basic(self) -> None:
         """Test basic update_node operation."""
-        from tests.tool_adapters import test_update_node
+        from ..tool_adapters import test_update_node
 
         # This will use mocked client
         result = await test_update_node({"id": "test-id"})

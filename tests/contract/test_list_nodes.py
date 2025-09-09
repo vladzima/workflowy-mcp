@@ -38,7 +38,7 @@ class TestListNodesContract:
     @pytest.mark.asyncio
     async def test_list_nodes_basic(self) -> None:
         """Test basic list_nodes operation."""
-        from tests.tool_adapters import test_list_nodes
+        from ..tool_adapters import test_list_nodes
 
         # This will use mocked client
         result = await test_list_nodes({"id": "test-id"})
