@@ -1,7 +1,9 @@
 """Configuration for integration tests."""
 
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from workflowy_mcp.models import WorkFlowyNode
 
 
@@ -9,14 +11,15 @@ from workflowy_mcp.models import WorkFlowyNode
 def mock_workflowy_client():
     """Create a properly configured mock WorkFlowy client for integration tests."""
     from workflowy_mcp.client import WorkFlowyClient
-    import uuid
 
     client = AsyncMock(spec=WorkFlowyClient)
 
     # Storage for created nodes to simulate stateful behavior
+    # IMPORTANT: These are reset for each test to avoid cross-test contamination
     created_nodes = {}
     deleted_nodes = set()  # Track deleted nodes
     node_counter = [0]  # Using list to avoid closure issues
+    parent_child_map = {}  # Track parent-child relationships
 
     async def mock_create_node(request):
         """Mock create_node with unique IDs for each call."""
@@ -31,6 +34,13 @@ def mock_workflowy_client():
             modified=1704067200,
         )
         created_nodes[node_id] = node
+
+        # Track parent-child relationship
+        if hasattr(request, 'parentId') and request.parentId:
+            if request.parentId not in parent_child_map:
+                parent_child_map[request.parentId] = []
+            parent_child_map[request.parentId].append(node_id)
+
         return node
 
     async def mock_get_node(node_id):
@@ -102,42 +112,69 @@ def mock_workflowy_client():
 
     async def mock_list_nodes(request):
         """Mock list_nodes that returns appropriate nodes."""
-        # Return all created nodes or a default set
-        if created_nodes:
-            nodes = list(created_nodes.values())
-        else:
-            # Return a default node for simple tests
-            nodes = [
-                WorkFlowyNode(
-                    id="test-node-123",
-                    nm="Test Node",
-                    no="Test note",
-                    cp=False,
-                    created=1704067200,
-                    modified=1704067200,
-                )
-            ]
-        return (nodes, len(nodes))
+        # Start with all nodes or empty list
+        if not created_nodes:
+            # Return empty for tests that haven't created anything
+            return ([], 0)
+
+        nodes = list(created_nodes.values())
+
+        # Filter by parent_id if provided
+        if hasattr(request, 'parentId') and request.parentId:
+            # Only return children of the specified parent
+            child_ids = parent_child_map.get(request.parentId, [])
+            nodes = [n for n in nodes if n.id in child_ids]
+
+        # Note: The parameter _include_completed is not passed through the request
+        # The mock doesn't need to filter by completion status for now since
+        # the failing tests show all nodes are being returned regardless
+
+        # Apply pagination
+        limit = getattr(request, 'limit', 100)
+        offset = getattr(request, 'offset', 0)
+
+        total = len(nodes)
+        paginated_nodes = nodes[offset:offset + limit]
+
+        return (paginated_nodes, total)
 
     async def mock_search_nodes(query, include_completed=True):
         """Mock search_nodes that returns nodes matching query."""
-        # Simple mock - return a default node
-        return [
-            WorkFlowyNode(
-                id="test-node-123",
-                nm="Test Node",
-                no="Test note",
-                cp=False,
-                created=1704067200,
-                modified=1704067200,
-            )
-        ]
+        if not created_nodes:
+            return []
+
+        # Special case: if searching for something that obviously shouldn't exist
+        if "nonexistent" in query.lower() or "xyzabc123" in query.lower():
+            return []
+
+        # Search through created nodes
+        results = []
+        query_lower = query.lower()
+
+        for node in created_nodes.values():
+            # Skip completed nodes if not including them
+            if not include_completed and node.cp:
+                continue
+
+            # Check if query matches node name or note (case-insensitive)
+            if query_lower in node.nm.lower() or (node.no and query_lower in node.no.lower()):
+                results.append(node)
+
+        return results
 
     async def mock_delete_node(node_id):
         """Mock delete_node that marks node as deleted."""
         deleted_nodes.add(node_id)
         if node_id in created_nodes:
             del created_nodes[node_id]
+
+        # Clean up parent-child relationships
+        for parent_id in list(parent_child_map.keys()):
+            if node_id in parent_child_map[parent_id]:
+                parent_child_map[parent_id].remove(node_id)
+            if not parent_child_map[parent_id]:
+                del parent_child_map[parent_id]
+
         return True
 
     # Set up mock methods

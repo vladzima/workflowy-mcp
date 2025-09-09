@@ -43,8 +43,6 @@ class TestAuthenticationAndErrors:
                 raise Exception("Rate limit exceeded")
             else:
                 # Success after retries - return what client.list_nodes returns
-                from workflowy_mcp.models import WorkFlowyNode
-
                 return ([], 0)  # Client returns tuple of (nodes, total)
 
         mock_workflowy_client.list_nodes.side_effect = mock_api_call
