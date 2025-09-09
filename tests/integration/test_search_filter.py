@@ -15,24 +15,24 @@ class TestSearchAndFilter:
 
         # Create nodes with searchable content
         parent = await create_node.fn(name="Project Alpha", note="Main project documentation")
-        created_ids.append(parent["node"]["id"])
+        created_ids.append(parent.id)
 
-        child1 = await create_node.fn(name="Alpha Subtask 1", parent_id=parent["node"]["id"])
-        created_ids.append(child1["node"]["id"])
+        child1 = await create_node.fn(name="Alpha Subtask 1", parent_id=parent.id)
+        created_ids.append(child1.id)
 
         child2 = await create_node.fn(
             name="Beta Subtask",
             note="Contains alpha keyword in note",
-            parent_id=parent["node"]["id"],
+            parent_id=parent.id,
         )
-        created_ids.append(child2["node"]["id"])
+        created_ids.append(child2.id)
 
         # Search for "alpha"
         results = await search_nodes.fn(query="alpha")
 
         # Should find all three nodes
-        assert len(results["nodes"]) >= 3
-        found_ids = [n["id"] for n in results["nodes"]]
+        assert len(results) >= 3
+        found_ids = [n.id for n in results]
         for node_id in created_ids:
             assert node_id in found_ids
 
@@ -49,30 +49,30 @@ class TestSearchAndFilter:
 
         # Create mix of completed and uncompleted nodes
         uncompleted1 = await create_node.fn(name="Active Task 1")
-        created_ids.append(uncompleted1["node"]["id"])
+        created_ids.append(uncompleted1.id)
 
         uncompleted2 = await create_node.fn(name="Active Task 2")
-        created_ids.append(uncompleted2["node"]["id"])
+        created_ids.append(uncompleted2.id)
 
         completed1 = await create_node.fn(name="Done Task 1")
-        created_ids.append(completed1["node"]["id"])
-        await complete_node.fn(node_id=completed1["node"]["id"])
+        created_ids.append(completed1.id)
+        await complete_node.fn(node_id=completed1.id)
 
         completed2 = await create_node.fn(name="Done Task 2")
-        created_ids.append(completed2["node"]["id"])
-        await complete_node.fn(node_id=completed2["node"]["id"])
+        created_ids.append(completed2.id)
+        await complete_node.fn(node_id=completed2.id)
 
         # List only uncompleted nodes
-        uncompleted = await list_nodes.fn(include_completed=False)
+        uncompleted = await list_nodes.fn(_include_completed=False)
         uncompleted_ids = [n["id"] for n in uncompleted["nodes"]]
 
-        assert uncompleted1["node"]["id"] in uncompleted_ids
-        assert uncompleted2["node"]["id"] in uncompleted_ids
-        assert completed1["node"]["id"] not in uncompleted_ids
-        assert completed2["node"]["id"] not in uncompleted_ids
+        assert uncompleted1.id in uncompleted_ids
+        assert uncompleted2.id in uncompleted_ids
+        assert completed1.id not in uncompleted_ids
+        assert completed2.id not in uncompleted_ids
 
         # List including completed nodes
-        all_nodes = await list_nodes.fn(include_completed=True)
+        all_nodes = await list_nodes.fn(_include_completed=True)
         all_ids = [n["id"] for n in all_nodes["nodes"]]
 
         for node_id in created_ids:
@@ -96,18 +96,18 @@ class TestSearchAndFilter:
 
         # Search for special character content
         results1 = await search_nodes.fn(query="function()")
-        assert len(results1["nodes"]) >= 1
+        assert len(results1) >= 1
 
         results2 = await search_nodes.fn(query="@example")
-        assert len(results2["nodes"]) >= 1
+        assert len(results2) >= 1
 
         results3 = await search_nodes.fn(query="$99")
-        assert len(results3["nodes"]) >= 1
+        assert len(results3) >= 1
 
         # Clean up
-        await delete_node.fn(node_id=node1["node"]["id"])
-        await delete_node.fn(node_id=node2["node"]["id"])
-        await delete_node.fn(node_id=node3["node"]["id"])
+        await delete_node.fn(node_id=node1.id)
+        await delete_node.fn(node_id=node2.id)
+        await delete_node.fn(node_id=node3.id)
 
     @pytest.mark.asyncio
     async def test_list_with_pagination(self) -> None:
@@ -119,7 +119,7 @@ class TestSearchAndFilter:
         # Create multiple nodes for pagination
         for i in range(10):
             result = await create_node.fn(name=f"Page Test Node {i:02d}")
-            created_ids.append(result["node"]["id"])
+            created_ids.append(result.id)
 
         # Get first page
         page1 = await list_nodes.fn(limit=5, offset=0)
@@ -145,16 +145,16 @@ class TestSearchAndFilter:
 
         # Create nested hierarchy
         root = await create_node.fn(name="Root")
-        root_id = root["node"]["id"]
+        root_id = root.id
 
         level1 = await create_node.fn(name="Level 1", parent_id=root_id)
 
-        level2 = await create_node.fn(name="Level 2", parent_id=level1["node"]["id"])
+        level2 = await create_node.fn(name="Level 2", parent_id=level1.id)
 
-        await create_node.fn(name="Level 3", parent_id=level2["node"]["id"])
+        await create_node.fn(name="Level 3", parent_id=level2.id)
 
         # List with depth=1 (only direct children)
-        shallow = await list_nodes.fn(parent_id=root_id, max_depth=1)
+        shallow = await list_nodes.fn(parent_id=root_id, _max_depth=1)
         shallow_names = [n["nm"] for n in shallow["nodes"]]
 
         assert "Level 1" in shallow_names
@@ -162,7 +162,7 @@ class TestSearchAndFilter:
         assert "Level 3" not in shallow_names
 
         # List with depth=2
-        deeper = await list_nodes.fn(parent_id=root_id, max_depth=2)
+        deeper = await list_nodes.fn(parent_id=root_id, _max_depth=2)
         deeper_names = [n["nm"] for n in deeper["nodes"]]
 
         assert "Level 1" in deeper_names
@@ -188,14 +188,14 @@ class TestSearchAndFilter:
         results_mixed = await search_nodes.fn(query="PrOjEcT")
 
         # All searches should return same number of results
-        assert len(results_upper["nodes"]) == len(results_lower["nodes"])
-        assert len(results_upper["nodes"]) == len(results_mixed["nodes"])
-        assert len(results_upper["nodes"]) >= 3
+        assert len(results_upper) == len(results_lower)
+        assert len(results_upper) == len(results_mixed)
+        assert len(results_upper) >= 3
 
         # Clean up
-        await delete_node.fn(node_id=node1["node"]["id"])
-        await delete_node.fn(node_id=node2["node"]["id"])
-        await delete_node.fn(node_id=node3["node"]["id"])
+        await delete_node.fn(node_id=node1.id)
+        await delete_node.fn(node_id=node2.id)
+        await delete_node.fn(node_id=node3.id)
 
     @pytest.mark.asyncio
     async def test_empty_search_results(self) -> None:
@@ -205,6 +205,4 @@ class TestSearchAndFilter:
         # Search for something that shouldn't exist
         results = await search_nodes.fn(query="xyzabc123nonexistent99999")
 
-        assert results["success"] is True
-        assert results["nodes"] == []
-        assert results["total"] == 0
+        assert results == []

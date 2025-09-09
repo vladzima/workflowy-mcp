@@ -255,4 +255,3 @@ class TestResponseTimes:
             assert (
                 time2 < time1 / 2
             ), f"Cache not improving performance: {time1:.2f}ms vs {time2:.2f}ms"
-

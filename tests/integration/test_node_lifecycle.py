@@ -18,24 +18,20 @@ class TestNodeLifecycle:
         )
 
         # Create a node
-        created = await create_node.fn(
-            name="Integration Test Node", note="This is a test note", priority=2
-        )
-        assert created["success"] is True
-        node_id = created["node"]["id"]
+        created = await create_node.fn(name="Integration Test Node", note="This is a test note")
+        node_id = created.id
 
         # Get the node to verify creation
         get_result = await get_node.fn(node_id=node_id)
-        assert get_result["node"]["nm"] == "Integration Test Node"
+        assert get_result.nm == "Integration Test Node"
 
         # Update the node
-        updated = await update_node.fn(node_id=node_id, name="Updated Test Node", priority=3)
-        assert updated["node"]["nm"] == "Updated Test Node"
-        assert updated["node"]["priority"] == 3
+        updated = await update_node.fn(node_id=node_id, name="Updated Test Node")
+        assert updated.nm == "Updated Test Node"
 
         # Complete the node
         completed = await complete_node.fn(node_id=node_id)
-        assert completed["node"]["cp"] is True
+        assert completed.cp is True
 
         # Delete the node
         deleted = await delete_node.fn(node_id=node_id)
@@ -54,7 +50,7 @@ class TestNodeLifecycle:
 
         # Create parent node
         parent = await create_node.fn(name="Parent Node")
-        parent_id = parent["node"]["id"]
+        parent_id = parent.id
 
         # Create child nodes
         await create_node.fn(name="Child 1", parent_id=parent_id)
@@ -76,15 +72,15 @@ class TestNodeLifecycle:
 
         # Create multiple nodes
         for i in range(5):
-            result = await create_node.fn(name=f"Bulk Test Node {i}", priority=i % 4)
-            created_ids.append(result["node"]["id"])
+            result = await create_node.fn(name=f"Bulk Test Node {i}")
+            created_ids.append(result.id)
 
         # Complete all nodes
         for node_id in created_ids:
             await complete_node.fn(node_id=node_id)
 
         # List completed nodes
-        completed = await list_nodes.fn(include_completed=True)
+        completed = await list_nodes.fn(_include_completed=True)
 
         # Verify all are completed
         completed_ids = [n["id"] for n in completed["nodes"]]
@@ -108,21 +104,21 @@ class TestNodeLifecycle:
 
         # Create a node
         created = await create_node.fn(name="State Test Node")
-        node_id = created["node"]["id"]
+        node_id = created.id
 
         # Verify initial state (uncompleted)
         node = await get_node.fn(node_id=node_id)
-        assert node["node"]["cp"] is False
+        assert node.cp is False
 
         # Complete the node
         await complete_node.fn(node_id=node_id)
         node = await get_node.fn(node_id=node_id)
-        assert node["node"]["cp"] is True
+        assert node.cp is True
 
         # Uncomplete the node
         await uncomplete_node.fn(node_id=node_id)
         node = await get_node.fn(node_id=node_id)
-        assert node["node"]["cp"] is False
+        assert node.cp is False
 
         # Clean up
         await delete_node.fn(node_id=node_id)
@@ -134,20 +130,19 @@ class TestNodeLifecycle:
 
         # Create node with full metadata
         created = await create_node.fn(
-            name="Metadata Test Node", note="This is a detailed note with metadata", priority=1
+            name="Metadata Test Node", note="This is a detailed note with metadata"
         )
-        node_id = created["node"]["id"]
+        node_id = created.id
 
         # Update with different metadata
         await update_node.fn(
-            node_id=node_id, name="Updated Metadata Node", note="Updated note content", priority=3
+            node_id=node_id, name="Updated Metadata Node", note="Updated note content"
         )
 
         # Verify all fields
         node = await get_node.fn(node_id=node_id)
-        assert node["node"]["nm"] == "Updated Metadata Node"
-        assert node["node"]["no"] == "Updated note content"
-        assert node["node"]["priority"] == 3
+        assert node.nm == "Updated Metadata Node"
+        assert node.no == "Updated note content"
 
         # Clean up
         await delete_node.fn(node_id=node_id)

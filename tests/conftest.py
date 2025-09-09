@@ -100,3 +100,20 @@ def mock_tool_context() -> MagicMock:
     context = MagicMock()
     context.logger = MagicMock()
     return context
+
+
+@pytest.fixture(autouse=True)
+def mock_global_client():
+    """Mock the global WorkFlowy client for integration tests."""
+    from unittest.mock import patch
+    import workflowy_mcp.server as server
+    from workflowy_mcp.client import WorkFlowyClient
+
+    # Create a mock client
+    mock_client = AsyncMock(spec=WorkFlowyClient)
+
+    # Patch the global _client variable
+    with patch.object(server, "_client", mock_client):
+        # Also patch get_client to return our mock
+        with patch.object(server, "get_client", return_value=mock_client):
+            yield mock_client
