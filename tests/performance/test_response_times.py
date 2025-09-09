@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from workflowy_mcp.models import WorkFlowyNode
 from workflowy_mcp.server import (
     create_node,
     get_node,
@@ -26,19 +27,20 @@ class TestResponseTimes:
             mock_get_client.return_value = mock_client
 
             # Mock fast API response
-            mock_client.create_node.return_value = {
-                "id": "test-123",
-                "nm": "Test Node",
-                "created": int(time.time()),
-                "modified": int(time.time()),
-            }
+            mock_client.create_node.return_value = WorkFlowyNode(
+                id="test-123",
+                nm="Test Node",
+                created=int(time.time()),
+                modified=int(time.time()),
+            )
 
             # Measure response time
             start = time.perf_counter()
             result = await create_node.fn(name="Test Node")
             elapsed = (time.perf_counter() - start) * 1000  # Convert to ms
 
-            assert result["success"] is True
+            assert result.id == "test-123"
+            assert result.nm == "Test Node"
             assert elapsed < 500, f"Response time {elapsed:.2f}ms exceeds 500ms limit"
 
     @pytest.mark.asyncio
@@ -48,18 +50,18 @@ class TestResponseTimes:
             mock_client = AsyncMock()
             mock_get_client.return_value = mock_client
 
-            mock_client.get_node.return_value = {
-                "id": "test-123",
-                "nm": "Test Node",
-                "created": int(time.time()),
-                "modified": int(time.time()),
-            }
+            mock_client.get_node.return_value = WorkFlowyNode(
+                id="test-123",
+                nm="Test Node",
+                created=int(time.time()),
+                modified=int(time.time()),
+            )
 
             start = time.perf_counter()
             result = await get_node.fn(node_id="test-123")
             elapsed = (time.perf_counter() - start) * 1000
 
-            assert result["success"] is True
+            assert result.id == "test-123"
             assert elapsed < 500, f"Response time {elapsed:.2f}ms exceeds 500ms limit"
 
     @pytest.mark.asyncio
@@ -71,21 +73,23 @@ class TestResponseTimes:
 
             # Mock list of nodes
             mock_nodes = [
-                {
-                    "id": f"node-{i}",
-                    "nm": f"Node {i}",
-                    "created": int(time.time()),
-                    "modified": int(time.time()),
-                }
+                WorkFlowyNode(
+                    id=f"node-{i}",
+                    nm=f"Node {i}",
+                    created=int(time.time()),
+                    modified=int(time.time()),
+                )
                 for i in range(100)
             ]
-            mock_client.list_nodes.return_value = mock_nodes
+            mock_client.list_nodes.return_value = (mock_nodes[:50], 100)
 
             start = time.perf_counter()
             result = await list_nodes.fn(limit=50)
             elapsed = (time.perf_counter() - start) * 1000
 
-            assert result["success"] is True
+            assert "nodes" in result
+            assert result["total"] == 100
+            assert len(result["nodes"]) == 50
             assert elapsed < 500, f"Response time {elapsed:.2f}ms exceeds 500ms limit"
 
     @pytest.mark.asyncio
@@ -97,12 +101,12 @@ class TestResponseTimes:
 
             # Mock search results
             mock_results = [
-                {
-                    "id": f"result-{i}",
-                    "nm": f"Search Result {i}",
-                    "created": int(time.time()),
-                    "modified": int(time.time()),
-                }
+                WorkFlowyNode(
+                    id=f"result-{i}",
+                    nm=f"Search Result {i}",
+                    created=int(time.time()),
+                    modified=int(time.time()),
+                )
                 for i in range(20)
             ]
             mock_client.search_nodes.return_value = mock_results
@@ -111,7 +115,8 @@ class TestResponseTimes:
             result = await search_nodes.fn(query="test query")
             elapsed = (time.perf_counter() - start) * 1000
 
-            assert result["success"] is True
+            assert isinstance(result, list)
+            assert len(result) == 20
             assert elapsed < 500, f"Response time {elapsed:.2f}ms exceeds 500ms limit"
 
     @pytest.mark.asyncio
@@ -122,9 +127,12 @@ class TestResponseTimes:
             mock_get_client.return_value = mock_client
 
             # Mock all operations
-            mock_client.get_node.return_value = {"id": "test", "nm": "Node"}
-            mock_client.list_nodes.return_value = [{"id": "test", "nm": "Node"}]
-            mock_client.search_nodes.return_value = [{"id": "test", "nm": "Node"}]
+            mock_node = WorkFlowyNode(
+                id="test", nm="Node", created=int(time.time()), modified=int(time.time())
+            )
+            mock_client.get_node.return_value = mock_node
+            mock_client.list_nodes.return_value = ([mock_node], 1)
+            mock_client.search_nodes.return_value = [mock_node]
 
             # Run concurrent operations
             async def operation(op_type: str):
@@ -166,7 +174,9 @@ class TestResponseTimes:
             mock_client = AsyncMock()
             mock_get_client.return_value = mock_client
 
-            mock_client.create_node.return_value = {"id": "test", "nm": "Node"}
+            mock_client.create_node.return_value = WorkFlowyNode(
+                id="test", nm="Node", created=int(time.time()), modified=int(time.time())
+            )
 
             # Create 50 nodes sequentially
             start = time.perf_counter()
@@ -187,7 +197,9 @@ class TestResponseTimes:
             mock_client = AsyncMock()
             mock_get_client.return_value = mock_client
 
-            mock_client.get_node.return_value = {"id": "test", "nm": "Node"}
+            mock_client.get_node.return_value = WorkFlowyNode(
+                id="test", nm="Node", created=int(time.time()), modified=int(time.time())
+            )
 
             # Collect response times
             response_times = []
@@ -223,7 +235,9 @@ class TestResponseTimes:
                 call_count += 1
                 if call_count == 1:
                     await asyncio.sleep(0.1)  # Simulate network delay
-                return {"id": "test", "nm": "Node"}
+                return WorkFlowyNode(
+                    id="test", nm="Node", created=int(time.time()), modified=int(time.time())
+                )
 
             mock_client.get_node = mock_get_node
 
@@ -241,3 +255,4 @@ class TestResponseTimes:
             assert (
                 time2 < time1 / 2
             ), f"Cache not improving performance: {time1:.2f}ms vs {time2:.2f}ms"
+
