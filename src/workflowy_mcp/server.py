@@ -2,6 +2,7 @@
 
 import logging
 from contextlib import asynccontextmanager
+from typing import Literal
 
 from fastmcp import FastMCP
 
@@ -78,8 +79,8 @@ async def create_node(
     name: str,
     parent_id: str | None = None,
     note: str | None = None,
-    layout_mode: str | None = None,
-    position: str = "top",
+    layout_mode: Literal["bullets", "todo", "h1", "h2", "h3"] | None = None,
+    position: Literal["top", "bottom"] = "top",
     _completed: bool = False,
 ) -> WorkFlowyNode:
     """Create a new node in WorkFlowy.
@@ -102,7 +103,7 @@ async def create_node(
         parent_id=parent_id,
         note=note,
         layoutMode=layout_mode,
-        position=position,  # type: ignore[arg-type]
+        position=position,
     )
 
     if _rate_limiter:
@@ -125,7 +126,7 @@ async def update_node(
     node_id: str,
     name: str | None = None,
     note: str | None = None,
-    layout_mode: str | None = None,
+    layout_mode: Literal["bullets", "todo", "h1", "h2", "h3"] | None = None,
     _completed: bool | None = None,
 ) -> WorkFlowyNode:
     """Update an existing WorkFlowy node.
