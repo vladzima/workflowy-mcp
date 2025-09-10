@@ -1,14 +1,6 @@
 # WorkFlowy MCP Server
 
-A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and task management capabilities with LLM applications like Claude Desktop.
-
-## Features
-
-- **7 MCP Tools** for complete WorkFlowy node management
-- **FastMCP Framework** for reliable MCP implementation  
-- **High Performance** with async operations and rate limiting
-- **Automatic Retry** with exponential backoff
-- **Structured Logging** for debugging and monitoring
+A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and task management capabilities with LLM applications.
 
 ## MCP Tools Available
 
@@ -28,7 +20,7 @@ A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and ta
 
 - Python 3.10 or higher
 - WorkFlowy account with API access
-- Claude Desktop or other MCP-compatible client
+- Claude Desktop or other (local, since it's a python package) MCP-compatible client
 
 ### Installation
 
@@ -63,7 +55,7 @@ pip install -e .
 1. **Get your WorkFlowy API key**:
    - From [WorkFlowy](https://beta.workflowy.com/api-key)
 
-2. **Configure Claude Desktop or another client**:
+2. **Configure client**:
    Edit your client configuration (Claude Desktop example):
    - Mac: `~/Library/Application Support/Claude/claude_desktop_config.json`
    - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
@@ -96,13 +88,15 @@ pip install -e .
 Once configured, you can use WorkFlowy tools with your agent:
 
 ```
-"Create a new WorkFlowy node called 'Project Ideas' with todo layout"
+"Create a new WorkFlowy todo 'complete project'" # This will create a node at the top of root
 
-"List all child nodes of my project"
+"List all bullets in node ID abc123"
 
-"Mark the node with ID abc123 as completed"
+"Mark the node https://workflowy.com/#/abc123 as completed"
 
-"Update the 'Weekly Goals' node with new notes"
+"Update the 'Weekly Goals' node with following notes"
+
+"Uncomplete the node"
 
 "Delete the obsolete task node"
 ```
