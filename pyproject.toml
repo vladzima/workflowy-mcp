@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "workflowy-mcp"
-version = "0.3.1"
+version = "0.3.2"
 description = "MCP server for WorkFlowy API integration"
 readme = "README.md"
 requires-python = ">=3.10"
