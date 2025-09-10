@@ -54,11 +54,11 @@ def mock_workflowy_client():
         # Return a default node if not found
         return WorkFlowyNode(
             id=node_id,
-            nm="Test Node",
-            no="Test note",
-            cp=False,
-            created=1704067200,
-            modified=1704067200,
+            name="Test Node",
+            note="Test note",
+            completedAt=None,
+            createdAt=1704067200,
+            modifiedAt=1704067200,
         )
 
     async def mock_update_node(node_id, request):

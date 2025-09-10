@@ -56,12 +56,11 @@ async def test_create_node(data: dict[str, Any]) -> dict[str, Any]:
 
         mock_node = WorkFlowyNode(
             id="new-node-id",
-            nm=data.get("name", ""),
-            no=data.get("note"),
-            cp=data.get("completed", False),
+            name=data.get("name", ""),
+            note=data.get("note"),
             priority=priority,
-            created=int(time.time()),
-            modified=int(time.time()),
+            createdAt=int(time.time()),
+            modifiedAt=int(time.time()),
         )
         mock_client.create_node.return_value = mock_node
 
@@ -85,12 +84,11 @@ async def test_update_node(data: dict[str, Any]) -> dict[str, Any]:
         # Mock the response
         mock_node = WorkFlowyNode(
             id=data["id"],
-            nm=data.get("name", "Updated Node"),
-            no=data.get("note"),
-            cp=data.get("completed", False),
+            name=data.get("name", "Updated Node"),
+            note=data.get("note"),
             priority=data.get("priority", 0),
-            created=int(time.time()),
-            modified=int(time.time()),
+            createdAt=int(time.time()),
+            modifiedAt=int(time.time()),
         )
         mock_client.update_node.return_value = mock_node
 
@@ -114,12 +112,12 @@ async def test_get_node(data: dict[str, Any]) -> dict[str, Any]:
         # Mock the response
         mock_node = WorkFlowyNode(
             id=data["id"],
-            nm="Test Node",
-            no="Test note",
-            cp=False,
-            ch=[],
-            created=int(time.time()),
-            modified=int(time.time()),
+            name="Test Node",
+            note="Test note",
+            completedAt=None,
+            children=[],
+            createdAt=int(time.time()),
+            modifiedAt=int(time.time()),
         )
         mock_client.get_node.return_value = mock_node
 
@@ -139,10 +137,10 @@ async def test_list_nodes(data: dict[str, Any]) -> dict[str, Any]:
         mock_nodes = [
             WorkFlowyNode(
                 id=f"node-{i}",
-                nm=f"Node {i}",
-                cp=False,
-                created=int(time.time()),
-                modified=int(time.time()),
+                name=f"Node {i}",
+                completedAt=None,
+                createdAt=int(time.time()),
+                modifiedAt=int(time.time()),
             )
             for i in range(data.get("limit", 5))
         ]
@@ -184,10 +182,10 @@ async def test_complete_node(data: dict[str, Any]) -> dict[str, Any]:
         # Mock the response
         mock_node = WorkFlowyNode(
             id=data["id"],
-            nm="Completed Node",
-            cp=True,
-            created=int(time.time()),
-            modified=int(time.time()),
+            name="Completed Node",
+            completedAt=int(time.time()),
+            createdAt=int(time.time()),
+            modifiedAt=int(time.time()),
         )
         mock_client.complete_node.return_value = mock_node
 
@@ -206,10 +204,10 @@ async def test_uncomplete_node(data: dict[str, Any]) -> dict[str, Any]:
         # Mock the response
         mock_node = WorkFlowyNode(
             id=data["id"],
-            nm="Uncompleted Node",
-            cp=False,
-            created=int(time.time()),
-            modified=int(time.time()),
+            name="Uncompleted Node",
+            completedAt=None,
+            createdAt=int(time.time()),
+            modifiedAt=int(time.time()),
         )
         mock_client.uncomplete_node.return_value = mock_node
 
@@ -229,10 +227,10 @@ async def test_search_nodes(data: dict[str, Any]) -> dict[str, Any]:
         mock_nodes = [
             WorkFlowyNode(
                 id=f"search-{i}",
-                nm=f"Result {i}",
-                cp=False,
-                created=int(time.time()),
-                modified=int(time.time()),
+                name=f"Result {i}",
+                completedAt=None,
+                createdAt=int(time.time()),
+                modifiedAt=int(time.time()),
             )
             for i in range(3)
         ]

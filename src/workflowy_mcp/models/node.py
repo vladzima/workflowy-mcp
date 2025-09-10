@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, AliasChoices
 
 
 class WorkFlowyNode(BaseModel):
@@ -10,13 +10,29 @@ class WorkFlowyNode(BaseModel):
 
     # API fields (what the API actually returns)
     id: str = Field(..., description="Unique identifier for the node")
-    name: str | None = Field(None, description="Text content of the node")
-    note: str | None = Field(None, description="Note content attached to the node")
+    name: str | None = Field(
+        None, validation_alias=AliasChoices("name", "nm"), description="Text content of the node"
+    )
+    note: str | None = Field(
+        None,
+        validation_alias=AliasChoices("note", "no"),
+        description="Note content attached to the node",
+    )
     priority: int | None = Field(None, description="Sort order")
     data: dict[str, Any] | None = Field(None, description="Node data including layoutMode")
-    createdAt: int | None = Field(None, description="Creation timestamp (Unix timestamp)")
-    modifiedAt: int | None = Field(None, description="Last modification timestamp")
-    completedAt: int | None = Field(None, description="Completion timestamp (null if not completed)")
+    createdAt: int | None = Field(
+        None,
+        validation_alias=AliasChoices("createdAt", "created"),
+        description="Creation timestamp (Unix timestamp)",
+    )
+    modifiedAt: int | None = Field(
+        None,
+        validation_alias=AliasChoices("modifiedAt", "modified"),
+        description="Last modification timestamp",
+    )
+    completedAt: int | None = Field(
+        None, description="Completion timestamp (null if not completed)"
+    )
 
     # Nested structure fields
     children: list["WorkFlowyNode"] | None = Field(None, alias="ch", description="Child nodes")

@@ -1,7 +1,7 @@
 """WorkFlowy API client implementation."""
 
 import json
-from typing import Any
+from typing import Any, Union
 
 import httpx
 
@@ -94,12 +94,12 @@ class WorkFlowyClient:
         try:
             response = await self.client.post("/nodes/", json=request.model_dump(exclude_none=True))
             data = await self._handle_response(response)
-            # Create endpoint returns just {"item_id": "..."} 
+            # Create endpoint returns just {"item_id": "..."}
             # We need to construct a minimal node response
             item_id = data.get("item_id")
             if not item_id:
                 raise NetworkError(f"Invalid response from create endpoint: {data}")
-            
+
             # Return a minimal node with just the ID and provided fields
             node_data = {
                 "id": item_id,
@@ -145,17 +145,17 @@ class WorkFlowyClient:
         try:
             params = request.model_dump(exclude_none=True)
             response = await self.client.get("/nodes", params=params)
-            data = await self._handle_response(response)
+            response_data: Union[list[Any], dict[str, Any]] = await self._handle_response(response)
 
             # Assuming API returns an array of nodes directly
             # (Need to verify actual response structure)
-            if isinstance(data, list):
-                nodes = [WorkFlowyNode(**node_data) for node_data in data]
-            elif isinstance(data, dict) and "nodes" in data:
-                nodes = [WorkFlowyNode(**node_data) for node_data in data["nodes"]]
-            else:
-                nodes = []
-            
+            nodes: list[WorkFlowyNode] = []
+            if isinstance(response_data, dict):
+                if "nodes" in response_data:
+                    nodes = [WorkFlowyNode(**node_data) for node_data in response_data["nodes"]]
+            elif isinstance(response_data, list):
+                nodes = [WorkFlowyNode(**node_data) for node_data in response_data]
+
             total = len(nodes)  # API doesn't provide a total count
             return nodes, total
         except httpx.TimeoutException as err:
