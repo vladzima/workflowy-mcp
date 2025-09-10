@@ -198,7 +198,7 @@ async def list_nodes(
     """List WorkFlowy nodes.
 
     Args:
-        parent_id: ID of parent node to list children for 
+        parent_id: ID of parent node to list children for
                    (omit or pass None to list root nodes - parameter won't be sent to API)
 
     Returns:
