@@ -31,9 +31,7 @@ class NodeCreateRequest(BaseModel):
     @field_validator("parent_id")
     @classmethod
     def validate_parent_id(cls, v: str | None) -> str | None:
-        """Convert None to 'None' string for API."""
-        if v is None:
-            return "None"
+        """Keep parent_id as-is - None means root level."""
         return v
 
 
