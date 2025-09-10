@@ -14,6 +14,22 @@ A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and ta
 | `workflowy_complete_node` | Mark a node as completed |
 | `workflowy_uncomplete_node` | Mark a node as uncompleted |
 
+## ⚠️ Important Limitations
+
+**The WorkFlowy API does not provide a way to discover existing node IDs.** This means:
+
+- ❌ Cannot list your root-level nodes
+- ❌ Cannot search for nodes by name or content  
+- ❌ Cannot browse your existing WorkFlowy outline
+- ✅ Can only work with nodes you create via this MCP server
+- ✅ Can work with node IDs you manually copy from WorkFlowy's web interface
+
+**Practical Impact:** You must either:
+1. Create new nodes first (the API returns their IDs), then operate on them
+2. Manually find and copy node IDs from [WorkFlowy's web interface](https://workflowy.com) using the node's menu → "Copy link" and extracting the ID from the URL
+
+This is a fundamental limitation of the WorkFlowy API, not this MCP implementation.
+
 ## Quick Start
 
 ### Prerequisites
@@ -87,18 +103,31 @@ pip install -e .
 
 Once configured, you can use WorkFlowy tools with your agent:
 
+### Working with New Nodes
 ```
-"Create a new WorkFlowy todo 'complete project'" # This will create a node at the top of root
+"Create a new WorkFlowy node called 'Project Tasks'"
+# Returns: Created node with ID: abc-123-def
 
-"List all bullets in node ID abc123"
+"Create a todo item 'Review PR' under parent node abc-123-def"
 
-"Mark the node https://workflowy.com/#/abc123 as completed"
+"Mark the node abc-123-def as completed"
 
-"Update the 'Weekly Goals' node with following notes"
+"List all children of node abc-123-def"
+```
 
-"Uncomplete the node"
+### Working with Existing Nodes
+First, get the node ID from WorkFlowy:
+1. Open [WorkFlowy](https://workflowy.com)
+2. Right-click on any node → "Copy link"
+3. Extract the ID from the URL: `https://workflowy.com/#/abc123def` → ID is `abc123def`
 
-"Delete the obsolete task node"
+Then use it:
+```
+"Get details for node abc123def"
+
+"Update node abc123def with new notes"
+
+"List children of node abc123def"
 ```
 
 ## Development
