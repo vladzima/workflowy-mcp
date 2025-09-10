@@ -1,7 +1,7 @@
 """WorkFlowy API client implementation."""
 
 import json
-from typing import Any, Union
+from typing import Any
 
 import httpx
 
@@ -145,7 +145,7 @@ class WorkFlowyClient:
         try:
             params = request.model_dump(exclude_none=True)
             response = await self.client.get("/nodes", params=params)
-            response_data: Union[list[Any], dict[str, Any]] = await self._handle_response(response)
+            response_data: list[Any] | dict[str, Any] = await self._handle_response(response)
 
             # Assuming API returns an array of nodes directly
             # (Need to verify actual response structure)

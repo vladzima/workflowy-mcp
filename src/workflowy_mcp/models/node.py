@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator, AliasChoices
+from pydantic import AliasChoices, BaseModel, Field, field_validator
 
 
 class WorkFlowyNode(BaseModel):
