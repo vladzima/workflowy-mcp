@@ -101,12 +101,14 @@ class WorkFlowyClient:
                 raise NetworkError(f"Invalid response from create endpoint: {data}")
             
             # Return a minimal node with just the ID and provided fields
-            return WorkFlowyNode(
-                id=item_id,
-                name=request.name,
-                note=request.note,
-                layoutMode=request.layoutMode,
-            )
+            node_data = {
+                "id": item_id,
+                "name": request.name,
+                "note": request.note,
+            }
+            if request.layoutMode:
+                node_data["data"] = {"layoutMode": request.layoutMode}
+            return WorkFlowyNode(**node_data)
         except httpx.TimeoutException as err:
             raise TimeoutError("create_node") from err
         except httpx.NetworkError as e:
@@ -119,9 +121,8 @@ class WorkFlowyClient:
                 f"/nodes/{node_id}", json=request.model_dump(exclude_none=True)
             )
             data = await self._handle_response(response)
-            # API returns node data nested under 'data' key
-            node_data = data.get("data", data)
-            return WorkFlowyNode(**node_data)
+            # API returns the full node object
+            return WorkFlowyNode(**data)
         except httpx.TimeoutException as err:
             raise TimeoutError("update_node") from err
         except httpx.NetworkError as e:
@@ -132,9 +133,8 @@ class WorkFlowyClient:
         try:
             response = await self.client.get(f"/nodes/{node_id}")
             data = await self._handle_response(response)
-            # API returns node data nested under 'data' key
-            node_data = data.get("data", data)
-            return WorkFlowyNode(**node_data)
+            # API returns the full node object
+            return WorkFlowyNode(**data)
         except httpx.TimeoutException as err:
             raise TimeoutError("get_node") from err
         except httpx.NetworkError as e:
@@ -147,13 +147,15 @@ class WorkFlowyClient:
             response = await self.client.get("/nodes", params=params)
             data = await self._handle_response(response)
 
-            # API returns nodes array directly under 'data' key
-            nodes_data = data.get("data", [])
-            if isinstance(nodes_data, dict):
-                # If it's a dict, it might be wrapped differently
-                nodes_data = nodes_data.get("nodes", [])
-
-            nodes = [WorkFlowyNode(**node_data) for node_data in nodes_data]
+            # Assuming API returns an array of nodes directly
+            # (Need to verify actual response structure)
+            if isinstance(data, list):
+                nodes = [WorkFlowyNode(**node_data) for node_data in data]
+            elif isinstance(data, dict) and "nodes" in data:
+                nodes = [WorkFlowyNode(**node_data) for node_data in data["nodes"]]
+            else:
+                nodes = []
+            
             total = len(nodes)  # API doesn't provide a total count
             return nodes, total
         except httpx.TimeoutException as err:
@@ -178,9 +180,8 @@ class WorkFlowyClient:
         try:
             response = await self.client.post(f"/nodes/{node_id}/complete")
             data = await self._handle_response(response)
-            # API returns node data nested under 'data' key
-            node_data = data.get("data", data)
-            return WorkFlowyNode(**node_data)
+            # API returns the full node object
+            return WorkFlowyNode(**data)
         except httpx.TimeoutException as err:
             raise TimeoutError("complete_node") from err
         except httpx.NetworkError as e:
@@ -191,9 +192,8 @@ class WorkFlowyClient:
         try:
             response = await self.client.post(f"/nodes/{node_id}/uncomplete")
             data = await self._handle_response(response)
-            # API returns node data nested under 'data' key
-            node_data = data.get("data", data)
-            return WorkFlowyNode(**node_data)
+            # API returns the full node object
+            return WorkFlowyNode(**data)
         except httpx.TimeoutException as err:
             raise TimeoutError("uncomplete_node") from err
         except httpx.NetworkError as e:

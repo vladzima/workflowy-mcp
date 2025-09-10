@@ -10,19 +10,13 @@ class WorkFlowyNode(BaseModel):
 
     # API fields (what the API actually returns)
     id: str = Field(..., description="Unique identifier for the node")
-    name: str | None = Field(None, alias="nm", description="Text content of the node")
-    note: str | None = Field(None, alias="no", description="Note content attached to the node")
+    name: str | None = Field(None, description="Text content of the node")
+    note: str | None = Field(None, description="Note content attached to the node")
     priority: int | None = Field(None, description="Sort order")
-    layoutMode: str | None = Field(None, description="Display mode (bullets, todo, h1, etc.)")
-    createdAt: int | None = Field(
-        None, alias="created", description="Creation timestamp (Unix timestamp)"
-    )
-    modifiedAt: int | None = Field(
-        None, alias="modified", description="Last modification timestamp"
-    )
-    completedAt: int | None = Field(
-        None, description="Completion timestamp (null if not completed)"
-    )
+    data: dict[str, Any] | None = Field(None, description="Node data including layoutMode")
+    createdAt: int | None = Field(None, description="Creation timestamp (Unix timestamp)")
+    modifiedAt: int | None = Field(None, description="Last modification timestamp")
+    completedAt: int | None = Field(None, description="Completion timestamp (null if not completed)")
 
     # Nested structure fields
     children: list["WorkFlowyNode"] | None = Field(None, alias="ch", description="Child nodes")
@@ -32,6 +26,13 @@ class WorkFlowyNode(BaseModel):
     completed_flag: bool | None = Field(
         None, alias="cp", description="Completion status (for tests)"
     )
+
+    @property
+    def layoutMode(self) -> str | None:
+        """Extract layoutMode from data field."""
+        if self.data and isinstance(self.data, dict):
+            return self.data.get("layoutMode")
+        return None
 
     # Backward compatibility aliases for tests
     @property
