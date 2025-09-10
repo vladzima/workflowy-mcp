@@ -16,19 +16,19 @@ A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and ta
 
 ## ⚠️ Important Limitations
 
-**The WorkFlowy API does not provide a way to discover existing node IDs.** This means:
+**The WorkFlowy API has significant discovery limitations:**
 
-- ❌ Cannot list your root-level nodes
-- ❌ Cannot search for nodes by name or content  
-- ❌ Cannot browse your existing WorkFlowy outline
-- ✅ Can only work with nodes you create via this MCP server
-- ✅ Can work with node IDs you manually copy from WorkFlowy's web interface
+- ✅ **CAN** list root-level nodes (call `list_nodes` without parent_id)
+- ✅ **CAN** navigate down the tree by listing children of discovered nodes
+- ❌ **CANNOT** search for nodes by name or content
+- ❌ **CANNOT** jump directly to deeply nested nodes
+- ❌ **CANNOT** use node IDs from WorkFlowy web URLs (they use different IDs)
 
-**Practical Impact:** You must either:
-1. Create new nodes first (the API returns their IDs), then operate on them
-2. Manually find and copy node IDs from [WorkFlowy's web interface](https://workflowy.com) using the node's menu → "Copy link" and extracting the ID from the URL
-
-This is a fundamental limitation of the WorkFlowy API, not this MCP implementation.
+**Practical Impact:** 
+- You must navigate hierarchically from root to find existing nodes
+- No text search means manually traversing the tree to find specific content
+- Deep nodes require multiple list operations to reach
+- The web interface IDs (`workflowy.com/#/abc123`) are NOT compatible with API IDs
 
 ## Quick Start
 
@@ -115,20 +115,21 @@ Once configured, you can use WorkFlowy tools with your agent:
 "List all children of node abc-123-def"
 ```
 
-### Working with Existing Nodes
-First, get the node ID from WorkFlowy:
-1. Open [WorkFlowy](https://workflowy.com)
-2. Right-click on any node → "Copy link"
-3. Extract the ID from the URL: `https://workflowy.com/#/abc123def` → ID is `abc123def`
-
-Then use it:
+### Navigating Existing Nodes
+Since there's no search, you must navigate from root:
 ```
-"Get details for node abc123def"
+"List my root-level WorkFlowy nodes"
+# Returns: List of top-level nodes with their IDs
 
-"Update node abc123def with new notes"
+"List children of node abc-123-def"
+# Navigate deeper into your outline
 
-"List children of node abc123def"
+"Get details for node abc-123-def"
+
+"Update node abc-123-def with new notes"
 ```
+
+**Note:** The node IDs from the web interface URLs are NOT compatible with the API.
 
 ## Development
 
