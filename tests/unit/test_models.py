@@ -20,7 +20,6 @@ from workflowy_mcp.models.requests import (
     NodeCreateRequest,
     NodeListRequest,
     NodeUpdateRequest,
-    SearchRequest,
 )
 
 
@@ -101,24 +100,10 @@ class TestRequestModels:
         assert request.note is None
         assert request.layoutMode is None
 
-    def test_list_request_pagination(self):
-        """Test list request with pagination."""
-        request = NodeListRequest(parentId="parent-123", completed=True, limit=50, offset=100)
+    def test_list_request_with_parent(self):
+        """Test list request with parent ID."""
+        request = NodeListRequest(parentId="parent-123")
         assert request.parentId == "parent-123"
-        assert request.completed is True
-        assert request.limit == 50
-        assert request.offset == 100
-
-    def test_search_request(self):
-        """Test search request validation."""
-        request = SearchRequest(query="project", includeCompleted=False)
-        assert request.query == "project"
-        assert request.includeCompleted is False
-
-    def test_search_request_empty_query(self):
-        """Test that empty query is rejected."""
-        with pytest.raises(ValueError):
-            SearchRequest(query="")
 
 
 class TestConfigModel:

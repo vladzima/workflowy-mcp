@@ -120,6 +120,4 @@ temp/
 Thumbs.db
 
 # Spec-Driven Development
-specs/*/task-agent*.md
-specs/*/parallel-*.md
-specs/*/implementation/
+specs/

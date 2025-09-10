@@ -198,32 +198,3 @@ class WorkFlowyClient:
             raise TimeoutError("uncomplete_node") from err
         except httpx.NetworkError as e:
             raise NetworkError(f"Network error: {str(e)}") from e
-
-    async def search_nodes(self, query: str, include_completed: bool = True) -> list[WorkFlowyNode]:
-        """Search for nodes by text content.
-
-        Note: WorkFlowy API doesn't have a native search endpoint.
-        This implementation fetches all nodes and filters locally.
-        """
-        try:
-            # Fetch all nodes and filter locally
-            params = {"include_completed": include_completed}
-            response = await self.client.get("/nodes", params=params)
-            data = await self._handle_response(response)
-
-            all_nodes = [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
-
-            # Filter nodes that contain the query in name or note
-            query_lower = query.lower()
-            filtered_nodes = [
-                node
-                for node in all_nodes
-                if (node.nm and query_lower in node.nm.lower())
-                or (node.no and query_lower in node.no.lower())
-            ]
-
-            return filtered_nodes
-        except httpx.TimeoutException as err:
-            raise TimeoutError("search_nodes") from err
-        except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}") from e

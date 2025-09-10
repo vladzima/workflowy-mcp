@@ -12,7 +12,6 @@ from workflowy_mcp.server import (
     create_node,
     get_node,
     list_nodes,
-    search_nodes,
 )
 
 
@@ -84,39 +83,12 @@ class TestResponseTimes:
             mock_client.list_nodes.return_value = (mock_nodes[:50], 100)
 
             start = time.perf_counter()
-            result = await list_nodes.fn(limit=50)
+            result = await list_nodes.fn()
             elapsed = (time.perf_counter() - start) * 1000
 
             assert "nodes" in result
             assert result["total"] == 100
             assert len(result["nodes"]) == 50
-            assert elapsed < 500, f"Response time {elapsed:.2f}ms exceeds 500ms limit"
-
-    @pytest.mark.asyncio
-    async def test_search_nodes_performance(self):
-        """Test search_nodes response time."""
-        with patch("workflowy_mcp.server.get_client") as mock_get_client:
-            mock_client = AsyncMock()
-            mock_get_client.return_value = mock_client
-
-            # Mock search results
-            mock_results = [
-                WorkFlowyNode(
-                    id=f"result-{i}",
-                    nm=f"Search Result {i}",
-                    createdAt=int(time.time()),
-                    modifiedAt=int(time.time()),
-                )
-                for i in range(20)
-            ]
-            mock_client.search_nodes.return_value = mock_results
-
-            start = time.perf_counter()
-            result = await search_nodes.fn(query="test query")
-            elapsed = (time.perf_counter() - start) * 1000
-
-            assert isinstance(result, list)
-            assert len(result) == 20
             assert elapsed < 500, f"Response time {elapsed:.2f}ms exceeds 500ms limit"
 
     @pytest.mark.asyncio
@@ -132,7 +104,6 @@ class TestResponseTimes:
             )
             mock_client.get_node.return_value = mock_node
             mock_client.list_nodes.return_value = ([mock_node], 1)
-            mock_client.search_nodes.return_value = [mock_node]
 
             # Run concurrent operations
             async def operation(op_type: str):
@@ -141,18 +112,15 @@ class TestResponseTimes:
                     await get_node.fn(node_id="test-123")
                 elif op_type == "list":
                     await list_nodes.fn()
-                elif op_type == "search":
-                    await search_nodes.fn(query="test")
                 return (time.perf_counter() - start) * 1000
 
-            # Run 10 concurrent operations
+            # Run concurrent operations
             tasks = []
-            for _ in range(3):
+            for _ in range(5):
                 tasks.extend(
                     [
                         operation("get"),
                         operation("list"),
-                        operation("search"),
                     ]
                 )
 

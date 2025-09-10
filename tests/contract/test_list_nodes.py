@@ -22,14 +22,10 @@ class TestListNodesContract:
         assert tool.name == "workflowy_list_nodes"
         assert tool.description is not None
 
-        # Check parameters
+        # Check parameters - only parent_id is supported
         params = tool.parameters
         assert params["type"] == "object"
         assert "parent_id" in params["properties"]
-        assert "_include_completed" in params["properties"]
-        assert "_max_depth" in params["properties"]
-        assert "limit" in params["properties"]
-        assert "offset" in params["properties"]
 
     @pytest.mark.asyncio
     async def test_list_nodes_basic(self) -> None:

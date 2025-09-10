@@ -191,22 +191,14 @@ async def get_node(node_id: str) -> WorkFlowyNode:
 
 
 # Tool: List Nodes
-@mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes with optional filtering")
+@mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes")
 async def list_nodes(
     parent_id: str | None = None,
-    _include_completed: bool = True,
-    _max_depth: int | None = None,
-    limit: int = 100,
-    offset: int = 0,
 ) -> dict:
-    """List WorkFlowy nodes with optional filtering.
+    """List WorkFlowy nodes.
 
     Args:
-        parent_id: Filter by parent node ID (optional)
-        _include_completed: Whether to include completed nodes (not used)
-        _max_depth: Maximum depth of child nodes to retrieve (not used)
-        limit: Maximum number of nodes to return
-        offset: Number of nodes to skip (for pagination)
+        parent_id: ID of parent node to list children for (None for root nodes)
 
     Returns:
         Dictionary with 'nodes' list and 'total' count
@@ -215,8 +207,6 @@ async def list_nodes(
 
     request = NodeListRequest(  # type: ignore[call-arg]
         parentId=parent_id,
-        limit=limit,
-        offset=offset,
     )
 
     if _rate_limiter:
@@ -311,37 +301,6 @@ async def uncomplete_node(node_id: str) -> WorkFlowyNode:
         if _rate_limiter:
             _rate_limiter.on_success()
         return node
-    except Exception as e:
-        if _rate_limiter and hasattr(e, "__class__") and e.__class__.__name__ == "RateLimitError":
-            _rate_limiter.on_rate_limit(getattr(e, "retry_after", None))
-        raise
-
-
-# Tool: Search Nodes
-@mcp.tool(name="workflowy_search_nodes", description="Search for WorkFlowy nodes by text content")
-async def search_nodes(
-    query: str,
-    include_completed: bool = True,
-) -> list:
-    """Search for WorkFlowy nodes by text content.
-
-    Args:
-        query: The search query string
-        include_completed: Whether to include completed nodes in results
-
-    Returns:
-        List of matching WorkFlowy nodes
-    """
-    client = get_client()
-
-    if _rate_limiter:
-        await _rate_limiter.acquire()
-
-    try:
-        nodes = await client.search_nodes(query, include_completed)
-        if _rate_limiter:
-            _rate_limiter.on_success()
-        return [node.model_dump() for node in nodes]
     except Exception as e:
         if _rate_limiter and hasattr(e, "__class__") and e.__class__.__name__ == "RateLimitError":
             _rate_limiter.on_rate_limit(getattr(e, "retry_after", None))

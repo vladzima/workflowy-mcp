@@ -125,44 +125,8 @@ def mock_workflowy_client():
             child_ids = parent_child_map.get(request.parentId, [])
             nodes = [n for n in nodes if n.id in child_ids]
 
-        # Note: The parameter _include_completed is not passed through the request
-        # The mock doesn't need to filter by completion status for now since
-        # the failing tests show all nodes are being returned regardless
-
-        # Apply pagination
-        limit = getattr(request, "limit", 100)
-        offset = getattr(request, "offset", 0)
-
         total = len(nodes)
-        paginated_nodes = nodes[offset : offset + limit]
-
-        return (paginated_nodes, total)
-
-    async def mock_search_nodes(query, include_completed=True):
-        """Mock search_nodes that returns nodes matching query."""
-        if not created_nodes:
-            return []
-
-        # Special case: if searching for something that obviously shouldn't exist
-        if "nonexistent" in query.lower() or "xyzabc123" in query.lower():
-            return []
-
-        # Search through created nodes
-        results = []
-        query_lower = query.lower()
-
-        for node in created_nodes.values():
-            # Skip completed nodes if not including them
-            if not include_completed and node.completedAt is not None:
-                continue
-
-            # Check if query matches node name or note (case-insensitive)
-            name_lower = (node.name or "").lower()
-            note_lower = (node.note or "").lower()
-            if query_lower in name_lower or query_lower in note_lower:
-                results.append(node)
-
-        return results
+        return (nodes, total)
 
     async def mock_delete_node(node_id):
         """Mock delete_node that marks node as deleted."""
@@ -185,7 +149,6 @@ def mock_workflowy_client():
     client.update_node.side_effect = mock_update_node
     client.delete_node.side_effect = mock_delete_node
     client.list_nodes.side_effect = mock_list_nodes
-    client.search_nodes.side_effect = mock_search_nodes
     client.complete_node.side_effect = mock_complete_node
     client.uncomplete_node.side_effect = mock_uncomplete_node
 

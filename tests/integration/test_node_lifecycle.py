@@ -79,8 +79,8 @@ class TestNodeLifecycle:
         for node_id in created_ids:
             await complete_node.fn(node_id=node_id)
 
-        # List completed nodes
-        completed = await list_nodes.fn(_include_completed=True)
+        # List all nodes
+        completed = await list_nodes.fn()
 
         # Verify all are completed
         completed_ids = [n["id"] for n in completed["nodes"]]

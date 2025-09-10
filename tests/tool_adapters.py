@@ -21,9 +21,6 @@ from workflowy_mcp.server import (
     list_nodes as list_nodes_tool,
 )
 from workflowy_mcp.server import (
-    search_nodes as search_nodes_tool,
-)
-from workflowy_mcp.server import (
     uncomplete_node as uncomplete_node_tool,
 )
 from workflowy_mcp.server import (
@@ -38,7 +35,6 @@ list_nodes = list_nodes_tool.fn
 delete_node = delete_node_tool.fn
 complete_node = complete_node_tool.fn
 uncomplete_node = uncomplete_node_tool.fn
-search_nodes = search_nodes_tool.fn
 
 
 # Create wrapper functions that can be tested
@@ -142,17 +138,13 @@ async def test_list_nodes(data: dict[str, Any]) -> dict[str, Any]:
                 createdAt=int(time.time()),
                 modifiedAt=int(time.time()),
             )
-            for i in range(data.get("limit", 5))
+            for i in range(5)
         ]
         mock_client.list_nodes.return_value = (mock_nodes, len(mock_nodes))
 
         # Call the actual function
         result = await list_nodes(
             parent_id=data.get("parentId"),
-            _include_completed=data.get("includeCompleted", True),
-            _max_depth=data.get("maxDepth"),
-            limit=data.get("limit", 100),
-            offset=data.get("offset", 0),
         )
 
         return result
@@ -215,30 +207,3 @@ async def test_uncomplete_node(data: dict[str, Any]) -> dict[str, Any]:
         result = await uncomplete_node(node_id=data["id"])
 
         return {"success": True, "node": result.model_dump()}
-
-
-async def test_search_nodes(data: dict[str, Any]) -> dict[str, Any]:
-    """Test wrapper for search_nodes tool."""
-    with patch("workflowy_mcp.server.get_client") as mock_get_client:
-        mock_client = AsyncMock()
-        mock_get_client.return_value = mock_client
-
-        # Mock the response
-        mock_nodes = [
-            WorkFlowyNode(
-                id=f"search-{i}",
-                name=f"Result {i}",
-                completedAt=None,
-                createdAt=int(time.time()),
-                modifiedAt=int(time.time()),
-            )
-            for i in range(3)
-        ]
-        mock_client.search_nodes.return_value = mock_nodes
-
-        # Call the actual function
-        result = await search_nodes(
-            query=data["query"], include_completed=data.get("includeCompleted", True)
-        )
-
-        return {"success": True, "nodes": result, "total": len(result)}

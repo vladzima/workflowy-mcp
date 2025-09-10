@@ -117,7 +117,7 @@ git commit -m "feat: add support for bulk node operations"
 git commit -m "fix: handle rate limit errors correctly"
 
 # Documentation
-git commit -m "docs: update API reference for search_nodes"
+git commit -m "docs: update API reference for list_nodes"
 
 # Tests
 git commit -m "test: add unit tests for retry logic"

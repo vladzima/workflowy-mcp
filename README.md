@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and ta
 
 ## Features
 
-- **8 MCP Tools** for complete WorkFlowy node management
+- **7 MCP Tools** for complete WorkFlowy node management
 - **FastMCP Framework** for reliable MCP implementation  
 - **High Performance** with async operations and rate limiting
 - **Automatic Retry** with exponential backoff
@@ -17,11 +17,10 @@ A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and ta
 | `workflowy_create_node` | Create new nodes with name, notes, and layout mode |
 | `workflowy_update_node` | Update existing node properties |
 | `workflowy_get_node` | Retrieve a specific node by ID |
-| `workflowy_list_nodes` | List nodes with filtering and pagination |
+| `workflowy_list_nodes` | List child nodes of a specific parent |
 | `workflowy_delete_node` | Delete a node and its children |
 | `workflowy_complete_node` | Mark a node as completed |
 | `workflowy_uncomplete_node` | Mark a node as uncompleted |
-| `workflowy_search_nodes` | Search nodes by text query |
 
 ## Quick Start
 
@@ -99,13 +98,13 @@ Once configured, you can use WorkFlowy tools with your agent:
 ```
 "Create a new WorkFlowy node called 'Project Ideas' with todo layout"
 
-"List all my uncompleted tasks"
-
-"Search for nodes containing 'meeting'"
+"List all child nodes of my project"
 
 "Mark the node with ID abc123 as completed"
 
 "Update the 'Weekly Goals' node with new notes"
+
+"Delete the obsolete task node"
 ```
 
 ## Development

@@ -19,8 +19,6 @@ from .requests import (
     NodeListResponse,
     NodeResponse,
     NodeUpdateRequest,
-    SearchRequest,
-    SearchResponse,
 )
 
 __all__ = [
@@ -33,8 +31,6 @@ __all__ = [
     "NodeResponse",
     "NodeListResponse",
     "DeleteResponse",
-    "SearchRequest",
-    "SearchResponse",
     # Configuration
     "APIConfiguration",
     # Errors

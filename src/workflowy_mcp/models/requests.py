@@ -50,31 +50,9 @@ class NodeUpdateRequest(BaseModel):
 
 
 class NodeListRequest(BaseModel):
-    """Request parameters for listing/searching nodes."""
+    """Request parameters for listing nodes."""
 
-    parentId: str | None = Field(None, description="Filter by parent node")
-    completed: bool | None = Field(None, description="Filter by completion status")
-    query: str | None = Field(None, description="Search query for text content")
-    limit: int = Field(100, ge=1, le=1000, description="Maximum results")
-    offset: int = Field(0, ge=0, description="Pagination offset")
-
-    @field_validator("limit")
-    @classmethod
-    def validate_limit(cls, v: int) -> int:
-        """Ensure limit is within acceptable range."""
-        if v < 1:
-            raise ValueError("Limit must be at least 1")
-        if v > 1000:
-            raise ValueError("Limit cannot exceed 1000")
-        return v
-
-    @field_validator("offset")
-    @classmethod
-    def validate_offset(cls, v: int) -> int:
-        """Ensure offset is non-negative."""
-        if v < 0:
-            raise ValueError("Offset must be non-negative")
-        return v
+    parentId: str | None = Field(None, description="Parent node ID to list children for")
 
 
 class NodeResponse(BaseModel):
@@ -102,27 +80,3 @@ class DeleteResponse(BaseModel):
     deleted: bool = True
     message: str = "Node deleted successfully"
     nodeId: str | None = None
-
-
-class SearchRequest(BaseModel):
-    """Request for searching nodes."""
-
-    query: str = Field(..., min_length=1, description="Search query string")
-    includeCompleted: bool = Field(True, description="Include completed nodes in results")
-
-    @field_validator("query")
-    @classmethod
-    def validate_query(cls, v: str) -> str:
-        """Ensure query is not empty."""
-        if not v or not v.strip():
-            raise ValueError("Search query cannot be empty")
-        return v.strip()
-
-
-class SearchResponse(BaseModel):
-    """Response for search operations."""
-
-    nodes: list[WorkFlowyNode]
-    total: int
-    query: str
-    success: bool = True
