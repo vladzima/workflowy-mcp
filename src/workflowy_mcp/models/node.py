@@ -1,5 +1,7 @@
 """WorkFlowy node data model."""
 
+from typing import Any
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -81,9 +83,9 @@ class WorkFlowyNode(BaseModel):
             raise ValueError("Timestamp must be positive")
         return v
 
-    def model_dump(self, **kwargs) -> dict:
+    def model_dump(self, **kwargs: Any) -> dict[str, Any]:
         """Custom serialization to include backward compatibility fields."""
-        data = super().model_dump(**kwargs)
+        data: dict[str, Any] = super().model_dump(**kwargs)
 
         # Add backward compatibility fields for tests
         data["nm"] = self.name
