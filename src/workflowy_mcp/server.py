@@ -78,6 +78,7 @@ async def create_node(
     name: str,
     parent_id: str | None = None,
     note: str | None = None,
+    layout_mode: str | None = None,
     _completed: bool = False,
 ) -> WorkFlowyNode:
     """Create a new node in WorkFlowy.
@@ -86,6 +87,7 @@ async def create_node(
         name: The text content of the node
         parent_id: ID of the parent node (optional)
         note: Additional note/description for the node
+        layout_mode: Layout mode for the node (bullets, todo, h1, h2, h3) (optional)
         _completed: Whether the node should be marked as completed (not used)
 
     Returns:
@@ -97,6 +99,7 @@ async def create_node(
         name=name,
         parent_id=parent_id,
         note=note,
+        layoutMode=layout_mode,
     )
 
     if _rate_limiter:
@@ -119,6 +122,7 @@ async def update_node(
     node_id: str,
     name: str | None = None,
     note: str | None = None,
+    layout_mode: str | None = None,
     _completed: bool | None = None,
 ) -> WorkFlowyNode:
     """Update an existing WorkFlowy node.
@@ -127,6 +131,7 @@ async def update_node(
         node_id: The ID of the node to update
         name: New text content for the node (optional)
         note: New note/description (optional)
+        layout_mode: New layout mode for the node (bullets, todo, h1, h2, h3) (optional)
         _completed: New completion status (not used - use complete_node/uncomplete_node)
 
     Returns:
@@ -137,6 +142,7 @@ async def update_node(
     request = NodeUpdateRequest(  # type: ignore[call-arg]
         name=name,
         note=note,
+        layoutMode=layout_mode,
     )
 
     if _rate_limiter:
