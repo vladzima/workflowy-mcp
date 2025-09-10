@@ -1,5 +1,7 @@
 """Request and response models for WorkFlowy operations."""
 
+from typing import Literal
+
 from pydantic import BaseModel, Field, field_validator
 
 from .node import WorkFlowyNode
@@ -11,8 +13,12 @@ class NodeCreateRequest(BaseModel):
     parent_id: str | None = Field(None, description="Parent node ID ('None' for root level)")
     name: str = Field(..., description="Text content (required)")
     note: str | None = Field(None, description="Note content (optional)")
-    layoutMode: str | None = Field(None, description="Display mode (bullets, todo, h1, etc.)")
-    position: str | None = Field(None, description="Position: 'top' or 'bottom' (default: 'top')")
+    layoutMode: Literal["bullets", "todo", "h1", "h2", "h3"] | None = Field(
+        None, description="Display mode (bullets, todo, h1, h2, h3)"
+    )
+    position: Literal["top", "bottom"] | None = Field(
+        "top", description="Position: 'top' or 'bottom' (default: 'top')"
+    )
 
     @field_validator("name")
     @classmethod
@@ -21,7 +27,7 @@ class NodeCreateRequest(BaseModel):
         if not v or not v.strip():
             raise ValueError("Node name must be non-empty")
         return v
-    
+
     @field_validator("parent_id")
     @classmethod
     def validate_parent_id(cls, v: str | None) -> str | None:
@@ -36,7 +42,9 @@ class NodeUpdateRequest(BaseModel):
 
     name: str | None = Field(None, description="New text content")
     note: str | None = Field(None, description="New note content")
-    layoutMode: str | None = Field(None, description="New display mode")
+    layoutMode: Literal["bullets", "todo", "h1", "h2", "h3"] | None = Field(
+        None, description="New display mode (bullets, todo, h1, h2, h3)"
+    )
 
     def has_updates(self) -> bool:
         """Check if at least one field is provided for update."""

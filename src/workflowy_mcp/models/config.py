@@ -54,7 +54,9 @@ class ServerConfig(BaseSettings):
         ..., description="WorkFlowy API key", alias="WORKFLOWY_API_KEY"
     )
     workflowy_api_url: str = Field(
-        "https://workflowy.com/api/v1", description="WorkFlowy API base URL", alias="WORKFLOWY_API_URL"
+        "https://workflowy.com/api/v1",
+        description="WorkFlowy API base URL",
+        alias="WORKFLOWY_API_URL",
     )
     workflowy_timeout: int = Field(
         30, description="API request timeout in seconds", alias="WORKFLOWY_TIMEOUT"

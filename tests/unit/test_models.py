@@ -70,7 +70,7 @@ class TestNodeModel:
         # ID is the only required field now
         with pytest.raises(ValueError):
             WorkFlowyNode(name="Missing ID")  # Missing id
-        
+
         # This should work - ID is provided
         node = WorkFlowyNode(id="test-123")
         assert node.id == "test-123"

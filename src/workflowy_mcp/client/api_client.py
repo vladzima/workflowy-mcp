@@ -94,7 +94,9 @@ class WorkFlowyClient:
         try:
             response = await self.client.post("/nodes", json=request.model_dump(exclude_none=True))
             data = await self._handle_response(response)
-            return WorkFlowyNode(**data)
+            # API returns node data nested under 'data' key
+            node_data = data.get("data", data)
+            return WorkFlowyNode(**node_data)
         except httpx.TimeoutException as err:
             raise TimeoutError("create_node") from err
         except httpx.NetworkError as e:
@@ -107,7 +109,9 @@ class WorkFlowyClient:
                 f"/nodes/{node_id}", json=request.model_dump(exclude_none=True)
             )
             data = await self._handle_response(response)
-            return WorkFlowyNode(**data)
+            # API returns node data nested under 'data' key
+            node_data = data.get("data", data)
+            return WorkFlowyNode(**node_data)
         except httpx.TimeoutException as err:
             raise TimeoutError("update_node") from err
         except httpx.NetworkError as e:
@@ -118,7 +122,9 @@ class WorkFlowyClient:
         try:
             response = await self.client.get(f"/nodes/{node_id}")
             data = await self._handle_response(response)
-            return WorkFlowyNode(**data)
+            # API returns node data nested under 'data' key
+            node_data = data.get("data", data)
+            return WorkFlowyNode(**node_data)
         except httpx.TimeoutException as err:
             raise TimeoutError("get_node") from err
         except httpx.NetworkError as e:
@@ -131,8 +137,14 @@ class WorkFlowyClient:
             response = await self.client.get("/nodes", params=params)
             data = await self._handle_response(response)
 
-            nodes = [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
-            total = data.get("total", len(nodes))
+            # API returns nodes array directly under 'data' key
+            nodes_data = data.get("data", [])
+            if isinstance(nodes_data, dict):
+                # If it's a dict, it might be wrapped differently
+                nodes_data = nodes_data.get("nodes", [])
+
+            nodes = [WorkFlowyNode(**node_data) for node_data in nodes_data]
+            total = len(nodes)  # API doesn't provide a total count
             return nodes, total
         except httpx.TimeoutException as err:
             raise TimeoutError("list_nodes") from err
@@ -143,6 +155,7 @@ class WorkFlowyClient:
         """Delete a node and all its children."""
         try:
             response = await self.client.delete(f"/nodes/{node_id}")
+            # Delete endpoint returns just a message, not nested data
             await self._handle_response(response)
             return True
         except httpx.TimeoutException as err:
@@ -155,7 +168,9 @@ class WorkFlowyClient:
         try:
             response = await self.client.post(f"/nodes/{node_id}/complete")
             data = await self._handle_response(response)
-            return WorkFlowyNode(**data)
+            # API returns node data nested under 'data' key
+            node_data = data.get("data", data)
+            return WorkFlowyNode(**node_data)
         except httpx.TimeoutException as err:
             raise TimeoutError("complete_node") from err
         except httpx.NetworkError as e:
@@ -166,7 +181,9 @@ class WorkFlowyClient:
         try:
             response = await self.client.post(f"/nodes/{node_id}/uncomplete")
             data = await self._handle_response(response)
-            return WorkFlowyNode(**data)
+            # API returns node data nested under 'data' key
+            node_data = data.get("data", data)
+            return WorkFlowyNode(**node_data)
         except httpx.TimeoutException as err:
             raise TimeoutError("uncomplete_node") from err
         except httpx.NetworkError as e:
@@ -174,7 +191,7 @@ class WorkFlowyClient:
 
     async def search_nodes(self, query: str, include_completed: bool = True) -> list[WorkFlowyNode]:
         """Search for nodes by text content.
-        
+
         Note: WorkFlowy API doesn't have a native search endpoint.
         This implementation fetches all nodes and filters locally.
         """
@@ -183,17 +200,18 @@ class WorkFlowyClient:
             params = {"include_completed": include_completed}
             response = await self.client.get("/nodes", params=params)
             data = await self._handle_response(response)
-            
+
             all_nodes = [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
-            
+
             # Filter nodes that contain the query in name or note
             query_lower = query.lower()
             filtered_nodes = [
-                node for node in all_nodes
-                if (node.nm and query_lower in node.nm.lower()) or 
-                   (node.no and query_lower in node.no.lower())
+                node
+                for node in all_nodes
+                if (node.nm and query_lower in node.nm.lower())
+                or (node.no and query_lower in node.no.lower())
             ]
-            
+
             return filtered_nodes
         except httpx.TimeoutException as err:
             raise TimeoutError("search_nodes") from err
