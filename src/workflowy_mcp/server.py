@@ -79,6 +79,7 @@ async def create_node(
     parent_id: str | None = None,
     note: str | None = None,
     layout_mode: str | None = None,
+    position: str = "top",
     _completed: bool = False,
 ) -> WorkFlowyNode:
     """Create a new node in WorkFlowy.
@@ -88,6 +89,7 @@ async def create_node(
         parent_id: ID of the parent node (optional)
         note: Additional note/description for the node
         layout_mode: Layout mode for the node (bullets, todo, h1, h2, h3) (optional)
+        position: Where to place the new node - "top" (default) or "bottom"
         _completed: Whether the node should be marked as completed (not used)
 
     Returns:
@@ -100,6 +102,7 @@ async def create_node(
         parent_id=parent_id,
         note=note,
         layoutMode=layout_mode,
+        position=position,  # type: ignore[arg-type]
     )
 
     if _rate_limiter:
