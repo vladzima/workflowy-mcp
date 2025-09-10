@@ -92,7 +92,7 @@ class WorkFlowyClient:
     async def create_node(self, request: NodeCreateRequest) -> WorkFlowyNode:
         """Create a new node in WorkFlowy."""
         try:
-            response = await self.client.post("/nodes", json=request.model_dump(exclude_none=True))
+            response = await self.client.post("/nodes/", json=request.model_dump(exclude_none=True))
             data = await self._handle_response(response)
             # API returns node data nested under 'data' key
             node_data = data.get("data", data)
@@ -106,7 +106,7 @@ class WorkFlowyClient:
         """Update an existing node."""
         try:
             response = await self.client.post(
-                f"/nodes/{node_id}", json=request.model_dump(exclude_none=True)
+                f"/nodes/{node_id}/", json=request.model_dump(exclude_none=True)
             )
             data = await self._handle_response(response)
             # API returns node data nested under 'data' key
@@ -120,7 +120,7 @@ class WorkFlowyClient:
     async def get_node(self, node_id: str) -> WorkFlowyNode:
         """Retrieve a specific node by ID."""
         try:
-            response = await self.client.get(f"/nodes/{node_id}")
+            response = await self.client.get(f"/nodes/{node_id}/")
             data = await self._handle_response(response)
             # API returns node data nested under 'data' key
             node_data = data.get("data", data)
@@ -134,7 +134,7 @@ class WorkFlowyClient:
         """List nodes with optional filtering."""
         try:
             params = request.model_dump(exclude_none=True)
-            response = await self.client.get("/nodes", params=params)
+            response = await self.client.get("/nodes/", params=params)
             data = await self._handle_response(response)
 
             # API returns nodes array directly under 'data' key
@@ -154,7 +154,7 @@ class WorkFlowyClient:
     async def delete_node(self, node_id: str) -> bool:
         """Delete a node and all its children."""
         try:
-            response = await self.client.delete(f"/nodes/{node_id}")
+            response = await self.client.delete(f"/nodes/{node_id}/")
             # Delete endpoint returns just a message, not nested data
             await self._handle_response(response)
             return True
@@ -166,7 +166,7 @@ class WorkFlowyClient:
     async def complete_node(self, node_id: str) -> WorkFlowyNode:
         """Mark a node as completed."""
         try:
-            response = await self.client.post(f"/nodes/{node_id}/complete")
+            response = await self.client.post(f"/nodes/{node_id}/complete/")
             data = await self._handle_response(response)
             # API returns node data nested under 'data' key
             node_data = data.get("data", data)
@@ -179,7 +179,7 @@ class WorkFlowyClient:
     async def uncomplete_node(self, node_id: str) -> WorkFlowyNode:
         """Mark a node as not completed."""
         try:
-            response = await self.client.post(f"/nodes/{node_id}/uncomplete")
+            response = await self.client.post(f"/nodes/{node_id}/uncomplete/")
             data = await self._handle_response(response)
             # API returns node data nested under 'data' key
             node_data = data.get("data", data)
@@ -198,7 +198,7 @@ class WorkFlowyClient:
         try:
             # Fetch all nodes and filter locally
             params = {"include_completed": include_completed}
-            response = await self.client.get("/nodes", params=params)
+            response = await self.client.get("/nodes/", params=params)
             data = await self._handle_response(response)
 
             all_nodes = [WorkFlowyNode(**node_data) for node_data in data.get("nodes", [])]
