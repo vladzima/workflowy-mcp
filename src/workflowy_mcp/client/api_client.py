@@ -143,6 +143,8 @@ class WorkFlowyClient:
     async def list_nodes(self, request: NodeListRequest) -> tuple[list[WorkFlowyNode], int]:
         """List nodes with optional filtering."""
         try:
+            # exclude_none=True ensures parent_id is omitted entirely for root nodes
+            # (API requires absence of parameter, not null value)
             params = request.model_dump(exclude_none=True)
             response = await self.client.get("/nodes", params=params)
             response_data: list[Any] | dict[str, Any] = await self._handle_response(response)

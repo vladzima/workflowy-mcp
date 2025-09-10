@@ -191,14 +191,15 @@ async def get_node(node_id: str) -> WorkFlowyNode:
 
 
 # Tool: List Nodes
-@mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes")
+@mcp.tool(name="workflowy_list_nodes", description="List WorkFlowy nodes (omit parent_id for root)")
 async def list_nodes(
     parent_id: str | None = None,
 ) -> dict:
     """List WorkFlowy nodes.
 
     Args:
-        parent_id: ID of parent node to list children for (None for root nodes)
+        parent_id: ID of parent node to list children for 
+                   (omit or pass None to list root nodes - parameter won't be sent to API)
 
     Returns:
         Dictionary with 'nodes' list and 'total' count
