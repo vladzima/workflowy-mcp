@@ -14,7 +14,7 @@ A Model Context Protocol (MCP) server that integrates WorkFlowy's outline and ta
 
 | Tool | Description |
 |------|-------------|
-| `workflowy_create_node` | Create new nodes with name, notes, and priority |
+| `workflowy_create_node` | Create new nodes with name, notes, and layout mode |
 | `workflowy_update_node` | Update existing node properties |
 | `workflowy_get_node` | Retrieve a specific node by ID |
 | `workflowy_list_nodes` | List nodes with filtering and pagination |
@@ -79,7 +79,7 @@ pip install -e .
          "env": {
            "WORKFLOWY_API_KEY": "your_actual_api_key_here",
            // Optional settings (uncomment to override defaults):
-           // "WORKFLOWY_API_BASE_URL": "https://beta.workflowy.com/api",
+           // "WORKFLOWY_API_URL": "https://workflowy.com/api/v1",
            // "WORKFLOWY_REQUEST_TIMEOUT": "30",
            // "WORKFLOWY_MAX_RETRIES": "3",
            // "WORKFLOWY_RATE_LIMIT_REQUESTS": "60",
@@ -97,7 +97,7 @@ pip install -e .
 Once configured, you can use WorkFlowy tools with your agent:
 
 ```
-"Create a new WorkFlowy node called 'Project Ideas' with high priority"
+"Create a new WorkFlowy node called 'Project Ideas' with todo layout"
 
 "List all my uncompleted tasks"
 
@@ -193,13 +193,13 @@ pytest -xvs
 ```python
 {
     "id": "unique-node-id",
-    "nm": "Node name",
-    "no": "Node notes/description",
-    "cp": false,  # Completed status
-    "priority": 2,  # 0-3 (0=none, 1=low, 2=normal, 3=high)
-    "ch": [],  # Child nodes
-    "created": 1234567890,  # Unix timestamp
-    "modified": 1234567890  # Unix timestamp
+    "name": "Node name",                  # Text content
+    "note": "Node notes/description",     # Optional notes
+    "layoutMode": "bullets",              # Display mode: bullets, todo, h1, h2, h3
+    "completedAt": null,                  # Completion timestamp (null if not completed)
+    "children": [],                       # Child nodes array
+    "createdAt": 1234567890,              # Unix timestamp
+    "modifiedAt": 1234567890               # Unix timestamp
 }
 ```
 
